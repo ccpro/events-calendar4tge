@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { SectionLinkRow } from '@/components/common'
 
 const GamesAddNew = () => {
     return (
@@ -24,16 +24,13 @@ const GamesAddNew = () => {
                     This form is not implemented yet. It will be used to create a new game entry.
                 </p>
 
-                <div
-                    style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', flexWrap: 'wrap' }}
-                >
-                    <Link href="/games" style={{ color: '#fff', textDecoration: 'underline' }}>
-                        Back to games list
-                    </Link>
-                    <Link href="/" style={{ color: '#fff', textDecoration: 'underline' }}>
-                        Back home
-                    </Link>
-                </div>
+                <SectionLinkRow
+                    color="#fff"
+                    links={[
+                        { href: '/games', label: 'Back to games list' },
+                        { href: '/', label: 'Back home' },
+                    ]}
+                />
             </section>
         </main>
     )

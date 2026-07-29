@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { SectionLinkRow } from '@/components/common'
 import { useGameTypeForm } from './hooks/useGameTypeForm'
 
 const GamesAddNewType = () => {
@@ -120,19 +120,14 @@ const GamesAddNewType = () => {
                     </button>
                 </form>
 
-                <div
-                    style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', flexWrap: 'wrap' }}
-                >
-                    <Link href="/games/type" style={{ color: '#fff', textDecoration: 'underline' }}>
-                        Back to game types
-                    </Link>
-                    <Link href="/games" style={{ color: '#fff', textDecoration: 'underline' }}>
-                        Back to games list
-                    </Link>
-                    <Link href="/" style={{ color: '#fff', textDecoration: 'underline' }}>
-                        Back home
-                    </Link>
-                </div>
+                <SectionLinkRow
+                    color="#fff"
+                    links={[
+                        { href: '/games/type', label: 'Back to game types' },
+                        { href: '/games', label: 'Back to games list' },
+                        { href: '/', label: 'Back home' },
+                    ]}
+                />
             </section>
         </main>
     )
