@@ -15,6 +15,9 @@ const Home = () => {
                         <Link className={styles.secondary} href="/player">
                             player
                         </Link>
+                        <Link className={styles.secondary} href="/games">
+                            games
+                        </Link>
                     </div>
                 </div>
             </main>
