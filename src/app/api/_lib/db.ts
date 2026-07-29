@@ -30,6 +30,16 @@ db.exec(`CREATE TABLE IF NOT EXISTS game_type (
     template varchar(256) NOT NULL,
     createdAt datetime NOT NULL default (datetime('now'))
 )`)
+db.exec(`INSERT INTO game_type (name, description, template)
+    SELECT 'Magic: The Gathering', 'Classic trading card game with standard and commander formats.', 'mtg-template'
+    WHERE NOT EXISTS (SELECT 1 FROM game_type WHERE template = 'mtg-template')
+    UNION ALL
+    SELECT 'Pokémon TCG', 'Fast-paced card battles with standard and expanded play options.', 'pokemon-template'
+    WHERE NOT EXISTS (SELECT 1 FROM game_type WHERE template = 'pokemon-template')
+    UNION ALL
+    SELECT 'One Piece Card Game', 'Anime-inspired card battles with arena-style events.', 'one-piece-template'
+    WHERE NOT EXISTS (SELECT 1 FROM game_type WHERE template = 'one-piece-template')
+`)
 
 db.exec(`CREATE TABLE IF NOT EXISTS game_event (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

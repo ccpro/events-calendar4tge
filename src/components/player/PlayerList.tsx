@@ -1,6 +1,6 @@
 'use client'
 
-import { Player } from '@/app/common/types'
+import { Player } from '@/common/types'
 import { useEffect, useState } from 'react'
 
 type PlayerListProps = {
