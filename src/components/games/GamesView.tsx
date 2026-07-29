@@ -1,19 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
-import OrganizerList from './OrganizerList'
+import GameList from './GameList'
 
-type Organizer = {
-    id: number
-    uuid: string
-    name: string
-    createdAt: string
-}
-
-export default function OrganizerView() {
-    const [activeOrganizer, setActiveOrganizer] = useState<Organizer | null>(null)
-
+const GamesView = () => {
     return (
         <main style={{ minHeight: '100vh', padding: '3rem', fontFamily: 'var(--font-geist-sans)' }}>
             <section
@@ -28,23 +18,25 @@ export default function OrganizerView() {
                 }}
             >
                 <p style={{ textTransform: 'uppercase', letterSpacing: '0.2em', opacity: 0.75 }}>
-                    Role
+                    Games
                 </p>
-                <h1 style={{ fontSize: '2rem', margin: '0.5rem 0 1rem' }}>Store Organizer</h1>
+                <h1 style={{ fontSize: '2rem', margin: '0.5rem 0 1rem' }}>Available Games</h1>
+                <Link
+                    href="/games/new"
+                    style={{
+                        display: 'inline-block',
+                        marginBottom: '1rem',
+                        color: '#fff',
+                        textDecoration: 'underline',
+                    }}
+                >
+                    Add new game
+                </Link>
                 <p style={{ lineHeight: 1.7, opacity: 0.9 }}>
-                    Select an organizer to activate their workspace.
+                    Browse the full game catalog from this dedicated view.
                 </p>
 
-                {activeOrganizer && (
-                    <div style={{ marginTop: '1rem', padding: '0.75rem 1rem', borderRadius: '12px', background: 'rgba(255,255,255,0.08)' }}>
-                        <strong>Active organizer:</strong> {activeOrganizer.name}
-                    </div>
-                )}
-
-                <OrganizerList
-                    activeOrganizerId={activeOrganizer?.id}
-                    onSelectOrganizer={setActiveOrganizer}
-                />
+                <GameList />
 
                 <div
                     style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', flexWrap: 'wrap' }}
@@ -52,11 +44,13 @@ export default function OrganizerView() {
                     <Link href="/" style={{ color: '#fff', textDecoration: 'underline' }}>
                         Back home
                     </Link>
-                    <Link href="/player" style={{ color: '#fff', textDecoration: 'underline' }}>
-                        Switch to player view
+                    <Link href="/organizer" style={{ color: '#fff', textDecoration: 'underline' }}>
+                        Go to organizer view
                     </Link>
                 </div>
             </section>
         </main>
     )
 }
+
+export default GamesView

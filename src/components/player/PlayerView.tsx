@@ -2,12 +2,14 @@
 
 import Link from 'next/link'
 import { useCallback } from 'react'
+import { useOrganizerContext } from '@/context/Organizer/OrganizerContext'
 import GeneratePlayerAccountWithQrCode from './GeneratePlayerAccountWithQrCode'
 import PlayerList from './PlayerList'
 
 const PlayerView = () => {
+    const { activeOrganizer } = useOrganizerContext()
+
     const loadPlayers = useCallback(() => {
-        // Trigger refresh in the child component
         return undefined
     }, [])
 
@@ -28,6 +30,12 @@ const PlayerView = () => {
                     Role
                 </p>
                 <h1 style={{ fontSize: '2rem', margin: '0.5rem 0 1rem' }}>Players</h1>
+
+                {activeOrganizer && (
+                    <p style={{ marginBottom: '1rem', opacity: 0.8 }}>
+                        Active organizer: {activeOrganizer.name}
+                    </p>
+                )}
 
                 <PlayerList onRefresh={loadPlayers} />
 

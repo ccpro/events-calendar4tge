@@ -1,5 +1,7 @@
 import PlayerView from '@/components/player/PlayerView'
 
-export default function PlayerPage() {
+const PlayerPage = () => {
     return <PlayerView />
 }
+
+export default PlayerPage

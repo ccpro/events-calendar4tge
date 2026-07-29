@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import db from '../_lib/db'
+import { ORGANIZER_ROLE_TYPE } from '@/app/common/constants'
 
 export async function GET() {
     try {
@@ -7,10 +8,10 @@ export async function GET() {
             .prepare(`
                 SELECT id, uuid, name, createdAt
                 FROM role
-                WHERE roleType = 1
+                WHERE roleType = ?
                 ORDER BY createdAt DESC
             `)
-            .all()
+            .all(ORGANIZER_ROLE_TYPE)
 
         return NextResponse.json({ organizers })
     }

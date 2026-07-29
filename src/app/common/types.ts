@@ -11,4 +11,14 @@ type Player = {
     name: string
     createdAt: string
 }
-export type { Organizer, Player }
+
+type Game = {
+    id: number
+    name: string
+    description: string | null
+    template: string
+    createdAt: string
+    isAssigned: number | boolean
+}
+
+export type { Organizer, Player, Game }

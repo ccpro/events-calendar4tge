@@ -1,4 +1,4 @@
-import OrganizerView from '../../../components/orginizer/OrganizerView'
+import OrganizerView from '../../../components/organizer/OrganizerView'
 
 export default function OrganizerPage() {
     return <OrganizerView />
