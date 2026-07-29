@@ -22,7 +22,7 @@ const GameList = () => {
             setError(null)
 
             try {
-                const response = await fetch('/api/games')
+                const response = await fetch('/api/games/events')
 
                 if (!response.ok) {
                     throw new Error(`Request failed with status ${response.status}`)

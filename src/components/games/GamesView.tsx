@@ -44,6 +44,9 @@ const GamesView = () => {
                     <Link href="/" style={{ color: '#fff', textDecoration: 'underline' }}>
                         Back home
                     </Link>
+                    <Link href="/games/type" style={{ color: '#fff', textDecoration: 'underline' }}>
+                        Available Games
+                    </Link>
                     <Link href="/organizer" style={{ color: '#fff', textDecoration: 'underline' }}>
                         Go to organizer view
                     </Link>
