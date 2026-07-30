@@ -13,7 +13,15 @@ const formatDate = (dateString: string): string => {
 
 const isDateNewerThanNow = (dateString: string): boolean => {
     const targetDate = new Date(dateString)
-    return targetDate.getTime() > Date.now()
+    return targetDate.getTime() > Date.UTC(
+        new Date().getUTCFullYear(),
+        new Date().getUTCMonth(),
+        new Date().getUTCDate(),
+        new Date().getUTCHours(),
+        new Date().getUTCMinutes(),
+        new Date().getUTCSeconds(),
+        new Date().getUTCMilliseconds(),
+    )
 }
 
 const isSameDay = (left: Date | null, right: Date | null): boolean => {
@@ -28,4 +36,12 @@ const isSameDay = (left: Date | null, right: Date | null): boolean => {
     )
 }
 
-export { formatDate, isDateNewerThanNow, isSameDay }
+const startsWithinNextHour = (dateString: string): boolean => {
+    const targetDate = new Date(dateString)
+    const now = new Date()
+    const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000)
+
+    return targetDate.getTime() >= now.getTime() && targetDate.getTime() <= oneHourFromNow.getTime()
+}
+
+export { formatDate, isDateNewerThanNow, isSameDay, startsWithinNextHour }

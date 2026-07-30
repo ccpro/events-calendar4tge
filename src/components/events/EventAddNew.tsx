@@ -56,7 +56,7 @@ const EventAddNew = () => {
                             ))}
                         </select>
                         {errors.organizer ? (
-                            <span style={{ color: '#ffb4b4', fontSize: '0.9rem' }}>
+                            <span style={{ color: 'red', fontSize: '0.9rem' }}>
                                 {errors.organizer}
                             </span>
                         ) : null}
@@ -77,7 +77,7 @@ const EventAddNew = () => {
                             ))}
                         </select>
                         {errors.gameType ? (
-                            <span style={{ color: '#ffb4b4', fontSize: '0.9rem' }}>
+                            <span style={{ color: 'red', fontSize: '0.9rem' }}>
                                 {errors.gameType}
                             </span>
                         ) : null}
@@ -92,7 +92,7 @@ const EventAddNew = () => {
                             style={inputStyle}
                         />
                         {errors.startAt ? (
-                            <span style={{ color: '#ffb4b4', fontSize: '0.9rem' }}>
+                            <span style={{ color: 'red', fontSize: '0.9rem' }}>
                                 {errors.startAt}
                             </span>
                         ) : null}
@@ -109,7 +109,7 @@ const EventAddNew = () => {
                             style={inputStyle}
                         />
                         {errors.playerCapacity ? (
-                            <span style={{ color: '#ffb4b4', fontSize: '0.9rem' }}>
+                            <span style={{ color: 'red', fontSize: '0.9rem' }}>
                                 {errors.playerCapacity}
                             </span>
                         ) : null}
@@ -125,7 +125,7 @@ const EventAddNew = () => {
                             style={inputStyle}
                         />
                         {errors.durationInMins ? (
-                            <span style={{ color: '#ffb4b4', fontSize: '0.9rem' }}>
+                            <span style={{ color: 'red', fontSize: '0.9rem' }}>
                                 {errors.durationInMins}
                             </span>
                         ) : null}
@@ -152,7 +152,7 @@ const EventAddNew = () => {
                         <p
                             style={{
                                 margin: 0,
-                                color: message.includes('successfully') ? '#b8f5c0' : '#ffb4b4',
+                                color: message.includes('successfully') ? 'green' : 'red',
                             }}
                         >
                             {message}
@@ -181,8 +181,9 @@ const EventAddNew = () => {
             <SectionLinkRow
                 color="#111"
                 links={[
-                    { href: '/', label: 'Back home' },
+                    { href: '/', label: 'home' },
                     { href: '/events', label: 'Back to events' },
+                    { href: '/calendar', label: 'Go to calendar' },
                 ]}
             />
         </PageShell>

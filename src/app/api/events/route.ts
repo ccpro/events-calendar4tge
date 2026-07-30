@@ -30,11 +30,8 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Duration must be at least 1 minute.' }, { status: 400 })
         }
 
-        const columns = db.prepare(`PRAGMA table_info(game_event)`).all() as Array<{ name: string }>
-        const hasDurationInMins = columns.some((column) => column.name === 'durationInMins')
-        const hasDuration = columns.some((column) => column.name === 'duration')
-        const insertColumns = hasDurationInMins ? 'organizer, gameType, startAt, playerCapacity, durationInMins' : 'organizer, gameType, startAt, playerCapacity, duration'
-        const insertValues = hasDurationInMins ? [organizer, gameType, startAt, playerCapacity, durationInMins] : [organizer, gameType, startAt, playerCapacity, durationInMins]
+        const insertColumns = `organizer, gameType, startAt, playerCapacity, durationInMins`
+        const insertValues = [organizer, gameType, startAt, playerCapacity, durationInMins]
 
         const result = db
             .prepare(`
@@ -55,6 +52,8 @@ export async function POST(request: Request) {
                     ge.startAt,
                     ge.playerCapacity,
                     ge.durationInMins,
+                    gt.minimumPlayers,
+                    datetime(ge.startAt, '+' || ge.durationInMins || ' minutes') AS endAt,
                     organizer_role.name AS organizerName,
                     (SELECT COUNT(*) FROM game_event_players gep WHERE gep.gameEventId = ge.id) AS playersAssigned
                 FROM game_event ge
@@ -98,7 +97,9 @@ export async function GET(request: Request) {
                     ge.startAt,
                     ge.playerCapacity,
                     ge.durationInMins,
+                    datetime(ge.startAt, '+' || ge.durationInMins || ' minutes') AS endAt,
                     organizer_role.name AS organizerName,
+                    gt.minimumPlayers,
                     (SELECT COUNT(*) FROM game_event_players gep WHERE gep.gameEventId = ge.id) AS playersAssigned,
                     EXISTS(
                         SELECT 1 FROM game_event_players gep2

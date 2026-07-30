@@ -33,9 +33,11 @@ type Event = {
     template: string
     createdAt: string
     startAt: string
+    endAt: string
     playerCapacity: number
     playersAssigned: number
-    isAssigned: number | boolean
+    minimumPlayers: number
+    isAssigned: boolean
 }
 
 export type { Organizer, Player, Game, Event }

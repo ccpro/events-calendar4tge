@@ -11,7 +11,7 @@ const EventView = () => {
             title="Available Events"
             description="Browse the full event catalog from this dedicated view."
             links={[
-                { href: '/', label: 'Back home' },
+                { href: '/', label: 'home' },
                 { href: '/games', label: 'Available games' },
                 { href: '/organizer', label: 'Go to organizer view' },
                 { href: '/calendar', label: 'Open calendar view' },

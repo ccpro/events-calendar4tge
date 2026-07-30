@@ -134,6 +134,28 @@
     gap: 0.75rem;
 }
 
+.calendarEventTableWrapper {
+    overflow-x: auto;
+}
+
+.calendarEventTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.calendarEventTable th,
+.calendarEventTable td {
+    border-bottom: 1px solid #e5e5e5;
+    padding: 0.45rem 0.35rem;
+    text-align: left;
+}
+
+.calendarEventTable th {
+    font-weight: 600;
+    color: #444;
+}
+
 .calendarEmptyState {
     margin: 0;
     opacity: 0.75;

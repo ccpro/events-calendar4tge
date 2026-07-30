@@ -12,7 +12,7 @@ const GameAddNew = () => {
             title="Add New Game Type"
             description="Create a reusable game template for future events."
             links={[
-                { href: '/', label: 'Back home' },
+                { href: '/', label: 'home' },
                 { href: '/games', label: 'Back to games' },
                 { href: '/events', label: 'Back to events' },
             ]}
