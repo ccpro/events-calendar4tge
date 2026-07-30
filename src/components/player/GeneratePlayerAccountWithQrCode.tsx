@@ -18,7 +18,7 @@ const generateUuid = () => {
 const GeneratePlayerAccountWithQrCode = ({ onRegister }: GeneratePlayerAccountWithQrCodeProps) => {
     const [ip, setIp] = useState('')
     const [error, setError] = useState<string | undefined>(undefined)
-    const [uuid] = useState(() => generateUuid())
+    const [uuid] = useState(() => (typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : generateUuid()))
 
     useEffect(() => {
         const loadData = async () => {
