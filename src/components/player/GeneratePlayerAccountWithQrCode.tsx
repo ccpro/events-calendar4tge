@@ -3,7 +3,7 @@ import { QRCode } from 'react-qr-code'
 import { SubmitButton } from '../common'
 
 type GeneratePlayerAccountWithQrCodeProps = {
-    onRegister?: (http_link: string) => void
+    onRegister?: (httpLink: string) => void
 }
 
 // i know that's is bad practice, but it's necessary for LAN/HTTP dev access
