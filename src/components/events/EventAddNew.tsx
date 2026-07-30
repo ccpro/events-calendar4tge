@@ -105,8 +105,10 @@ const EventAddNew = () => {
                         <input
                             type="number"
                             min={1}
+                            max={1440}
                             step={1}
                             value={form.durationInMins}
+                            onChange={(event) => updateField('durationInMins', event.target.value)}
                             style={inputStyle}
                         />
                     </label>
