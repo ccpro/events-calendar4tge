@@ -45,10 +45,52 @@ db.exec(`CREATE TABLE IF NOT EXISTS game_event (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     organizer INTEGER NOT NULL REFERENCES role(id),
     gameType INTEGER NOT NULL REFERENCES game_type(id),
-    player INTEGER NOT NULL REFERENCES role(id),
     createdAt datetime NOT NULL default (datetime('now')),
     startAt datetime NOT NULL default (datetime('now')),
     playerCapacity INTEGER NOT NULL CHECK (playerCapacity BETWEEN 1 AND 30)
 )`)
+
+// table alteration
+const gameEventColumns = db.prepare(`PRAGMA table_info(game_event)`).all() as { name: string }[]
+if (gameEventColumns.some((column) => column.name === 'player')) {
+    db.exec(`ALTER TABLE game_event DROP COLUMN player`)
+}
+
+const gameEventPlayersTable = db.prepare(`SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'game_event_players'`).get() as { name: string } | undefined
+const gameEventPlayersSql = db.prepare(`SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'game_event_players'`).get() as { sql: string } | undefined
+
+if (gameEventPlayersTable) {
+    if (gameEventPlayersSql?.sql?.includes('REFERENCES player(id)')) {
+        db.exec(`PRAGMA foreign_keys = OFF`)
+        db.exec(`
+            CREATE TABLE game_event_players_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                gameEventId INTEGER NOT NULL REFERENCES game_event(id),
+                playerId INTEGER NOT NULL REFERENCES role(id),
+                addedAt datetime NOT NULL default (datetime('now'))
+            )
+        `)
+        db.exec(`
+            INSERT INTO game_event_players_new (id, gameEventId, playerId, addedAt)
+            SELECT id, gameEventId, playerId, addedAt FROM game_event_players
+        `)
+        db.exec(`DROP TABLE game_event_players`)
+        db.exec(`ALTER TABLE game_event_players_new RENAME TO game_event_players`)
+        db.exec(`PRAGMA foreign_keys = ON`)
+    }
+}
+else {
+    db.exec(`
+        CREATE TABLE game_event_players (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            gameEventId INTEGER NOT NULL REFERENCES game_event(id),
+            playerId INTEGER NOT NULL REFERENCES role(id),
+            addedAt datetime NOT NULL default (datetime('now'))
+        )
+    `)
+}
+
+db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_game_event_players_game_event_id_player_id
+    ON game_event_players (gameEventId, playerId)`)
 
 export default db

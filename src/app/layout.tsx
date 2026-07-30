@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
-import { OrganizerProvider } from '@/context/Organizer/OrganizerProvider'
+import { SelectedRolesProvider } from '@/context/SelectedRoles/SelectedRolesProvider'
 import './globals.css'
 
 const geistSans = Geist({
@@ -26,7 +26,7 @@ export default function RootLayout({
     return (
         <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
             <body>
-                <OrganizerProvider>{children}</OrganizerProvider>
+                <SelectedRolesProvider>{children}</SelectedRolesProvider>
             </body>
         </html>
     )

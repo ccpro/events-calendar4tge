@@ -61,7 +61,7 @@ export const useGameTypeForm = () => {
             setMessage(null)
 
             try {
-                const response = await fetch('/api/games/types', {
+                const response = await fetch('/api/games', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

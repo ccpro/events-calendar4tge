@@ -3,7 +3,7 @@
 import { SectionLinkRow } from '@/components/common'
 import { useGameTypeForm } from './hooks/useGameTypeForm'
 
-const GamesAddNewType = () => {
+const GameAddNew = () => {
     const { form, errors, submitting, message, updateField, handleSubmit } = useGameTypeForm()
 
     return (
@@ -123,8 +123,8 @@ const GamesAddNewType = () => {
                 <SectionLinkRow
                     color="#fff"
                     links={[
-                        { href: '/games/type', label: 'Back to game types' },
-                        { href: '/games', label: 'Back to games list' },
+                        { href: '/games', label: 'Back to games' },
+                        { href: '/events', label: 'Back to events' },
                         { href: '/', label: 'Back home' },
                     ]}
                 />
@@ -133,4 +133,4 @@ const GamesAddNewType = () => {
     )
 }
 
-export default GamesAddNewType
+export default GameAddNew

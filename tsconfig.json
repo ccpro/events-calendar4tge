@@ -19,7 +19,8 @@
             }
         ],
         "paths": {
-            "@/*": ["./src/*"]
+            "@/*": ["./src/*"],
+            "api_lib/*": ["./src/app/api/_lib/*"]
         },
         "types": ["vitest/globals"]
     },

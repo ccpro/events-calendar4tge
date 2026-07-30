@@ -1,15 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-
-type Game = {
-    id: number
-    name: string
-    description: string | null
-    template: string
-    createdAt: string
-    isAssigned: number | boolean
-}
+import type { Game } from '@/app/common/types'
+import styles from '@/app/globals.module.css'
+import { formatDate } from '@/app/common/dateUtils'
 
 const GameList = () => {
     const [games, setGames] = useState<Game[]>([])
@@ -22,27 +16,27 @@ const GameList = () => {
             setError(null)
 
             try {
-                const response = await fetch('/api/games/events')
+                const response = await fetch('/api/games')
 
                 if (!response.ok) {
                     throw new Error(`Request failed with status ${response.status}`)
                 }
 
                 const data = await response.json()
-                setGames(data.games ?? [])
+                setGames(data.gameTypes ?? [])
             } catch (err) {
                 setGames([])
-                setError(err instanceof Error ? err.message : 'Unable to load games')
+                setError(err instanceof Error ? err.message : 'Unable to load game types')
             } finally {
                 setLoading(false)
             }
         }
 
-        loadGames()
+        void loadGames()
     }, [])
 
     if (loading) {
-        return <p style={{ marginTop: '1rem', opacity: 0.75 }}>Loading games...</p>
+        return <p style={{ marginTop: '1rem', opacity: 0.75 }}>Loading game types...</p>
     }
 
     if (error) {
@@ -50,30 +44,32 @@ const GameList = () => {
     }
 
     if (games.length === 0) {
-        return <p style={{ marginTop: '1rem', opacity: 0.75 }}>No games found.</p>
+        return <p style={{ marginTop: '1rem', opacity: 0.75 }}>No game types found.</p>
     }
 
     return (
-        <div style={{ display: 'grid', gap: '0.75rem', marginTop: '1.25rem' }}>
-            {games.map((game) => (
-                <div
-                    key={game.id}
-                    style={{
-                        padding: '0.9rem 1rem',
-                        borderRadius: '12px',
-                        border: '1px solid rgba(255,255,255,0.2)',
-                        background: 'rgba(255,255,255,0.08)',
-                    }}
-                >
-                    <div style={{ fontWeight: 600 }}>{game.name}</div>
-                    <div style={{ opacity: 0.8, fontSize: '0.9rem', marginTop: '0.25rem' }}>
-                        {game.description || 'No description provided.'}
-                    </div>
-                    <div style={{ opacity: 0.7, fontSize: '0.8rem', marginTop: '0.35rem' }}>
-                        Template: {game.template}
-                    </div>
-                </div>
-            ))}
+        <div className={styles.tableShell}>
+            <h2>Games</h2>
+            <table className={styles.table}>
+                <thead>
+                    <tr className={styles.tableHeadRow}>
+                        <th className={styles.tableHeaderCell}>Name</th>
+                        <th className={styles.tableHeaderCell}>Description</th>
+                        <th className={styles.tableHeaderCell}>Template</th>
+                        <th className={styles.tableHeaderCell}>Created (utc)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {games.map((template) => (
+                        <tr key={template.id} className={styles.tableBodyRow}>
+                            <td className={styles.tableCell}>{template.name}</td>
+                            <td className={styles.tableCell}>{template.description}</td>
+                            <td className={styles.tableCellMono}>{template.template}</td>
+                            <td className={styles.tableCell}>{formatDate(template.createdAt)}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     )
 }
