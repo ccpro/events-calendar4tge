@@ -5,6 +5,7 @@ import { Player } from '@/common/types'
 import { useSelectedRolesContext } from '@/context/SelectedRoles/SelectedRolesContext'
 import { useEffect, useState } from 'react'
 import { SubmitButton } from '../common'
+import styles from '@/app/globals.module.css'
 
 type PlayerListProps = {
     onRefresh?: () => void
@@ -39,26 +40,24 @@ const PlayerList = ({ onRefresh }: PlayerListProps) => {
         <div style={{ marginTop: '1rem', marginBottom: '1.5rem' }}>
             <h2>Players</h2>
             {players.length > 0 ? (
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <table className={styles.table}>
                     <thead>
-                        <tr style={{ textAlign: 'left', borderBottom: '1px solid #ddd' }}>
-                            <th style={{ padding: '0.5rem 0' }}>Name</th>
-                            <th style={{ padding: '0.5rem 0' }}>UUID</th>
-                            <th style={{ padding: '0.5rem 0' }}>Created</th>
-                            <th style={{ padding: '0.5rem 0', textAlign: 'center' }}>[]</th>
+                        <tr className={styles.tableHeadRow}>
+                            <th className={styles.tableHeaderCell}>Name</th>
+                            <th className={styles.tableHeaderCell}>UUID</th>
+                            <th className={styles.tableHeaderCell}>Created (utc)</th>
+                            <th className={styles.tableHeaderCell} style={{ textAlign: 'center' }}>
+                                []
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         {players.map((player) => (
-                            <tr key={player.id} style={{ borderBottom: '1px solid #eee' }}>
-                                <td style={{ padding: '0.5rem 0' }}>{player.name}</td>
-                                <td style={{ padding: '0.5rem 0', fontFamily: 'monospace' }}>
-                                    {player.uuid}
-                                </td>
-                                <td style={{ padding: '0.5rem 0' }}>
-                                    {formatDate(player.createdAt)}
-                                </td>
-                                <td style={{ padding: '0.5rem 0' }}>
+                            <tr key={player.id} className={styles.tableBodyRow}>
+                                <td className={styles.tableCell}>{player.name}</td>
+                                <td className={styles.tableCellMono}>{player.uuid}</td>
+                                <td className={styles.tableCell}>{formatDate(player.createdAt)}</td>
+                                <td className={styles.tableCellCentered}>
                                     <SubmitButton
                                         disabled={activePlayer?.id === player.id}
                                         onClick={() => setActivePlayer(player)}

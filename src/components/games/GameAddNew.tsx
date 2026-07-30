@@ -123,8 +123,8 @@ const GameAddNew = () => {
                 <SectionLinkRow
                     color="#fff"
                     links={[
-                        { href: '/games/type', label: 'Back to game types' },
-                        { href: '/games', label: 'Back to games list' },
+                        { href: '/games', label: 'Back to games' },
+                        { href: '/events', label: 'Back to events' },
                         { href: '/', label: 'Back home' },
                     ]}
                 />

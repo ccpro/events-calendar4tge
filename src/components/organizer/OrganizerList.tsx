@@ -32,7 +32,6 @@ const OrganizerList = () => {
 
     return (
         <>
-            {' '}
             <p style={{ lineHeight: 1.7, opacity: 0.9 }}>
                 Select an organizer to activate their workspace.
             </p>

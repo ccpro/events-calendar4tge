@@ -48,7 +48,7 @@ const EventPlayerList = ({ event, onChange }: EventPlayerListProps) => {
         setRemovingId(playerId)
 
         try {
-            const response = await fetch(`/api/events/players/unassign/${event.id}/${playerId}`, {
+            const response = await fetch(`/api/events/unassign/${event.id}/${playerId}`, {
                 method: 'DELETE',
             })
 

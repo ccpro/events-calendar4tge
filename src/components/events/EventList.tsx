@@ -109,8 +109,8 @@ const EventList = ({ viewType }: EventListProps) => {
                         <th className={styles.tableHeaderCell}>Name</th>
                         <th className={styles.tableHeaderCell}>Organizer</th>
                         <th className={styles.tableHeaderCell}>Template</th>
-                        <th className={styles.tableHeaderCell}>Created</th>
-                        <th className={styles.tableHeaderCell}>Start</th>
+                        <th className={styles.tableHeaderCell}>Created (utc)</th>
+                        <th className={styles.tableHeaderCell}>Start (utc)</th>
                         <th className={styles.tableHeaderCell}>Capacity/Players</th>
                         {viewType === 'player' && (
                             <th className={styles.tableHeaderCell}>Assigned</th>
