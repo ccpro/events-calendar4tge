@@ -8,7 +8,7 @@ export async function POST(request: Request) {
         const gameType = Number(body?.gameType)
         const startAt = typeof body?.startAt === 'string' ? body.startAt.trim() : ''
         const playerCapacity = Number(body?.playerCapacity)
-        const duration = Number(body?.duration ?? 0)
+        const duration = Number(body?.duration ?? 2)
 
         if (!Number.isInteger(organizer) || organizer <= 0) {
             return NextResponse.json({ error: 'A valid organizer is required.' }, { status: 400 })
@@ -25,8 +25,8 @@ export async function POST(request: Request) {
         if (!Number.isInteger(playerCapacity) || playerCapacity < 1 || playerCapacity > 30) {
             return NextResponse.json({ error: 'Player capacity must be between 1 and 30.' }, { status: 400 })
         }
-        if (!Number.isInteger(duration) || duration < 0) {
-            return NextResponse.json({ error: 'Duration must be a non-negative number.' }, { status: 400 })
+        if (!Number.isInteger(duration) || duration < 2) {
+            return NextResponse.json({ error: 'Duration must be at least 2 minutes.' }, { status: 400 })
         }
 
         const result = db

@@ -89,7 +89,7 @@ export const useEventForm = (initialOrganizerId?: number) => {
         }
 
         if (!Number.isInteger(playerCapacity) || playerCapacity < 1 || playerCapacity > 30) {
-            nextErrors.playerCapacity = 'Player capacity must be between 1 and 30.'
+            nextErrors.playerCapacity = `Player capacity must be at least ${selectedGame?.minPlayers ?? 60} for this game.`
         }
 
         if (selectedGame && playerCapacity < selectedGame.minPlayers) {

@@ -4,7 +4,6 @@ import PageShell from '@/components/common/PageShell'
 import { SectionLinkRow, SubmitButton } from '@/components/common'
 import { useSelectedRolesContext } from '@/context/SelectedRoles/SelectedRolesContext'
 import { useEventForm } from './hooks/useEventForm'
-import { formatDate } from '@/app/common/dateUtils'
 
 const inputStyle = {
     padding: '0.75rem',
