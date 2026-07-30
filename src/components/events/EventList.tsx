@@ -134,9 +134,13 @@ const EventList = ({ viewType }: EventListProps) => {
                                                 onClick={() => handleSignUp(event.id)}
                                                 cta_text_enabled="Sign Up"
                                                 cta_text_disabled={
-                                                    isDateNewerThanNow(event.startAt)
-                                                        ? 'Full'
-                                                        : 'Late'
+                                                    !activePlayer
+                                                        ? 'Select player'
+                                                        : signingUpId === event.id
+                                                          ? 'Signing up...'
+                                                          : !isDateNewerThanNow(event.startAt)
+                                                            ? 'Late'
+                                                            : 'Full'
                                                 }
                                             />
                                         )}
