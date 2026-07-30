@@ -1,6 +1,6 @@
 'use client'
 
-import type { Event } from '@/app/common/types'
+import type { Event } from '@/common/types'
 
 type SubmitButtonProps = {
     disabled: boolean

@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import type { Event } from '@/app/common/types'
+import type { Event } from '@/common/types'
 import { formatDate, isDateNewerThanNow } from '@/app/common/dateUtils'
 import { Modal, SubmitButton } from '@/components/common'
 import { useSelectedRolesContext } from '@/context/SelectedRoles/SelectedRolesContext'
@@ -96,81 +96,81 @@ const EventList = ({ viewType }: EventListProps) => {
         return <p style={{ marginTop: '1rem', opacity: 0.9, color: '#ffb4b4' }}>{error}</p>
     }
 
-    if (events.length === 0) {
-        return <p style={{ marginTop: '1rem', opacity: 0.75 }}>No events found.</p>
-    }
-
     return (
         <div className={styles.tableShell}>
             <h2>Events</h2>
-            <table className={styles.table}>
-                <thead>
-                    <tr className={styles.tableHeadRow}>
-                        <th className={styles.tableHeaderCell}>Name</th>
-                        <th className={styles.tableHeaderCell}>Organizer</th>
-                        <th className={styles.tableHeaderCell}>Template</th>
-                        <th className={styles.tableHeaderCell}>Created (utc)</th>
-                        <th className={styles.tableHeaderCell}>Start (utc)</th>
-                        <th className={styles.tableHeaderCell}>Duration (mins)</th>
-                        <th className={styles.tableHeaderCell}>Capacity/Players</th>
-                        {viewType === 'player' && (
-                            <th className={styles.tableHeaderCell}>Assigned</th>
-                        )}
-                        {viewType !== 'list' && <th className={styles.tableHeaderCell}>Actions</th>}
-                    </tr>
-                </thead>
-                <tbody>
-                    {events.map((event) => (
-                        <tr key={event.id} className={styles.tableBodyRow}>
-                            <td className={styles.tableCell}>{event.name}</td>
-                            <td className={styles.tableCell}>{event.organizerName}</td>
-                            <td className={styles.tableCellMono}>{event.template}</td>
-                            <td className={styles.tableCell}>{formatDate(event.createdAt)}</td>
-                            <td className={styles.tableCell}>{formatDate(event.startAt)}</td>
-                            <td className={styles.tableCellCentered}>{event.duration}</td>
-                            <td className={styles.tableCellCentered}>
-                                {event.playerCapacity}/{event.playersAssigned ?? 0}
-                            </td>
+            {events.length === 0 ? (
+                <p style={{ marginTop: '1rem', opacity: 0.75 }}>No events found.</p>
+            ) : (
+                <table className={styles.table}>
+                    <thead>
+                        <tr className={styles.tableHeadRow}>
+                            <th className={styles.tableHeaderCell}>Name</th>
+                            <th className={styles.tableHeaderCell}>Organizer</th>
+                            <th className={styles.tableHeaderCell}>Template</th>
+                            <th className={styles.tableHeaderCell}>Created (utc)</th>
+                            <th className={styles.tableHeaderCell}>Start (utc)</th>
+                            <th className={styles.tableHeaderCell}>Capacity/Players</th>
                             {viewType === 'player' && (
-                                <>
-                                    <td className={styles.tableCellCentered}>
-                                        {event.isAssigned ? 'Yes' : 'No'}
-                                    </td>
-                                    <td className={styles.tableCell}>
-                                        {event.isAssigned ? (
-                                            <span style={{ color: 'blue' }}>assigned</span>
-                                        ) : (
-                                            (() => {
-                                                const { disabled, ctaTextDisabled } =
-                                                    getSignUpButtonState(event)
-
-                                                return (
-                                                    <SubmitButton
-                                                        disabled={disabled}
-                                                        onClick={() => handleSignUp(event.id)}
-                                                        cta_text_enabled="Sign Up"
-                                                        cta_text_disabled={ctaTextDisabled}
-                                                    />
-                                                )
-                                            })()
-                                        )}
-                                    </td>
-                                </>
+                                <th className={styles.tableHeaderCell}>Assigned</th>
                             )}
-                            {viewType === 'organizer' && (
-                                <td className={styles.tableActionCell}>
-                                    <SubmitButton
-                                        disabled={false}
-                                        onClick={() => viewEventPlayers(event)}
-                                        cta_text_enabled="View Players"
-                                        cta_text_disabled="View Players"
-                                    />
-                                </td>
+                            {viewType !== 'list' && (
+                                <th className={styles.tableHeaderCell}>Actions</th>
                             )}
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {events.map((event) => (
+                            <tr key={event.id} className={styles.tableBodyRow}>
+                                <td className={styles.tableCell}>{event.name}</td>
+                                <td className={styles.tableCell}>{event.organizerName}</td>
+                                <td className={styles.tableCellMono}>{event.template}</td>
+                                <td className={styles.tableCell}>{formatDate(event.createdAt)}</td>
+                                <td className={styles.tableCell}>{formatDate(event.startAt)}</td>
+                                <td className={styles.tableCellCentered}>
+                                    {event.playerCapacity}/{event.playersAssigned ?? 0}
+                                </td>
+                                {viewType === 'player' && (
+                                    <>
+                                        <td className={styles.tableCellCentered}>
+                                            {event.isAssigned ? 'Yes' : 'No'}
+                                        </td>
+                                        <td className={styles.tableCell}>
+                                            {event.isAssigned ? (
+                                                <span style={{ color: 'blue' }}>assigned</span>
+                                            ) : (
+                                                (() => {
+                                                    const { disabled, ctaTextDisabled } =
+                                                        getSignUpButtonState(event)
+
+                                                    return (
+                                                        <SubmitButton
+                                                            disabled={disabled}
+                                                            onClick={() => handleSignUp(event.id)}
+                                                            cta_text_enabled="Sign Up"
+                                                            cta_text_disabled={ctaTextDisabled}
+                                                        />
+                                                    )
+                                                })()
+                                            )}
+                                        </td>
+                                    </>
+                                )}
+                                {viewType === 'organizer' && (
+                                    <td className={styles.tableActionCell}>
+                                        <SubmitButton
+                                            disabled={false}
+                                            onClick={() => viewEventPlayers(event)}
+                                            cta_text_enabled="View Players"
+                                            cta_text_disabled="View Players"
+                                        />
+                                    </td>
+                                )}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
 
             <Modal
                 open={selectedEvent !== null}

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { Game } from '@/app/common/types'
+import type { Game } from '@/common/types'
 import styles from '@/app/globals.module.css'
 import { formatDate } from '@/app/common/dateUtils'
 
@@ -56,6 +56,9 @@ const GameList = () => {
                         <th className={styles.tableHeaderCell}>Name</th>
                         <th className={styles.tableHeaderCell}>Description</th>
                         <th className={styles.tableHeaderCell}>Template</th>
+                        <th className={styles.tableHeaderCell}>Duration (mins)</th>
+                        <th className={styles.tableHeaderCell}>Minimum Players</th>
+                        <th className={styles.tableHeaderCell}>Format</th>
                         <th className={styles.tableHeaderCell}>Created (utc)</th>
                         <th className={styles.tableHeaderCell}>Duration (mins)</th>
                         <th className={styles.tableHeaderCell}>Min Players</th>
@@ -63,6 +66,7 @@ const GameList = () => {
                     </tr>
                 </thead>
                 <tbody>
+<<<<<<< HEAD
                     {games.map((game) => (
                         <tr key={game.id} className={styles.tableBodyRow}>
                             <td className={styles.tableCell}>{game.name}</td>
@@ -72,6 +76,17 @@ const GameList = () => {
                             <td className={styles.tableCell}>{game.durationInMins}</td>
                             <td className={styles.tableCell}>{game.minPlayers}</td>
                             <td className={styles.tableCellMono}>{game.format}</td>
+=======
+                    {games.map((template) => (
+                        <tr key={template.id} className={styles.tableBodyRow}>
+                            <td className={styles.tableCell}>{template.name}</td>
+                            <td className={styles.tableCell}>{template.description}</td>
+                            <td className={styles.tableCell}>{template.template}</td>
+                            <td className={styles.tableCell}>{template.durationInMins}</td>
+                            <td className={styles.tableCell}>{template.minimumPlayers}</td>
+                            <td className={styles.tableCell}>{template.format}</td>
+                            <td className={styles.tableCell}>{formatDate(template.createdAt)}</td>
+>>>>>>> dev/ccpro-add-event-calendar
                         </tr>
                     ))}
                 </tbody>

@@ -8,7 +8,8 @@ export async function POST(request: Request) {
         const gameType = Number(body?.gameType)
         const startAt = typeof body?.startAt === 'string' ? body.startAt.trim() : ''
         const playerCapacity = Number(body?.playerCapacity)
-        const duration = Number(body?.duration ?? 2)
+
+        const durationInMins = Number(body?.durationInMins)
 
         if (!Number.isInteger(organizer) || organizer <= 0) {
             return NextResponse.json({ error: 'A valid organizer is required.' }, { status: 400 })
@@ -25,16 +26,20 @@ export async function POST(request: Request) {
         if (!Number.isInteger(playerCapacity) || playerCapacity < 1 || playerCapacity > 30) {
             return NextResponse.json({ error: 'Player capacity must be between 1 and 30.' }, { status: 400 })
         }
-        if (!Number.isInteger(duration) || duration < 2) {
+
+        if (!Number.isInteger(durationInMins) || durationInMins < 2) {
             return NextResponse.json({ error: 'Duration must be at least 2 minutes.' }, { status: 400 })
         }
 
+        const insertColumns = `organizer, gameType, startAt, playerCapacity, durationInMins`
+        const insertValues = [organizer, gameType, startAt, playerCapacity, durationInMins]
+
         const result = db
             .prepare(`
-                INSERT INTO game_event (organizer, gameType, startAt, playerCapacity,duration)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO game_event (${insertColumns})
+                VALUES (${insertValues.map(() => '?').join(', ')})
             `)
-            .run(organizer, gameType, startAt, playerCapacity, duration)
+            .run(...insertValues)
 
         const event = db
             .prepare(`
@@ -47,8 +52,10 @@ export async function POST(request: Request) {
                     ge.organizer,
                     ge.startAt,
                     ge.playerCapacity,
+                    ge.durationInMins,
+                    gt.minimumPlayers,
+                    datetime(ge.startAt, '+' || ge.durationInMins || ' minutes') AS endAt,
                     organizer_role.name AS organizerName,
-                    ge.duration,
                     (SELECT COUNT(*) FROM game_event_players gep WHERE gep.gameEventId = ge.id) AS playersAssigned
                 FROM game_event ge
                 JOIN game_type gt ON gt.id = ge.gameType
@@ -90,8 +97,10 @@ export async function GET(request: Request) {
                     ge.organizer as organizerId,
                     ge.startAt,
                     ge.playerCapacity,
+                    ge.durationInMins,
+                    datetime(ge.startAt, '+' || ge.durationInMins || ' minutes') AS endAt,
                     organizer_role.name AS organizerName,
-                    ge.duration,
+                    gt.minimumPlayers,
                     (SELECT COUNT(*) FROM game_event_players gep WHERE gep.gameEventId = ge.id) AS playersAssigned,
                     EXISTS(
                         SELECT 1 FROM game_event_players gep2

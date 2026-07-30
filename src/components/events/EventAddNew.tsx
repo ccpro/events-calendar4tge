@@ -1,7 +1,7 @@
 'use client'
 
 import PageShell from '@/components/common/PageShell'
-import { SectionLinkRow, SubmitButton } from '@/components/common'
+import { SectionLinkRow } from '@/components/common'
 import { useSelectedRolesContext } from '@/context/SelectedRoles/SelectedRolesContext'
 import { useEventForm } from './hooks/useEventForm'
 
@@ -23,10 +23,9 @@ const EventAddNew = () => {
         organizers,
         gameTypes,
         loadingOptions,
-        minCapacity,
         updateField,
         handleSubmit,
-        submitForm,
+        getFormatOptions,
     } = useEventForm(activeOrganizer?.id)
 
     return (
@@ -49,7 +48,7 @@ const EventAddNew = () => {
                             onChange={(event) => updateField('organizer', event.target.value)}
                             style={inputStyle}
                         >
-                            <option value="">Event organizer</option>
+                            <option value="">Select an organizer</option>
                             {organizers.map((organizer) => (
                                 <option key={organizer.id} value={organizer.id}>
                                     {organizer.name}
@@ -57,35 +56,35 @@ const EventAddNew = () => {
                             ))}
                         </select>
                         {errors.organizer ? (
-                            <span style={{ color: '#ffb4b4', fontSize: '0.9rem' }}>
+                            <span style={{ color: 'red', fontSize: '0.9rem' }}>
                                 {errors.organizer}
                             </span>
                         ) : null}
                     </label>
 
                     <label style={{ display: 'grid', gap: '0.35rem' }}>
-                        <span style={{ fontWeight: 600 }}>Game</span>
+                        <span style={{ fontWeight: 600 }}>Game type</span>
                         <select
                             value={form.gameType}
                             onChange={(event) => updateField('gameType', event.target.value)}
                             style={inputStyle}
                         >
-                            <option value="">Select a game for event</option>
-                            {gameTypes.map((game) => (
-                                <option key={game.id} value={game.id}>
-                                    {game.name}
+                            <option value="">Select a game type</option>
+                            {gameTypes.map((gameType) => (
+                                <option key={gameType.id} value={gameType.id}>
+                                    {gameType.name}
                                 </option>
                             ))}
                         </select>
                         {errors.gameType ? (
-                            <span style={{ color: '#ffb4b4', fontSize: '0.9rem' }}>
+                            <span style={{ color: 'red', fontSize: '0.9rem' }}>
                                 {errors.gameType}
                             </span>
                         ) : null}
                     </label>
 
                     <label style={{ display: 'grid', gap: '0.35rem' }}>
-                        <span style={{ fontWeight: 600 }}>Event start date</span>
+                        <span style={{ fontWeight: 600 }}>Start date</span>
                         <input
                             type="datetime-local"
                             value={form.startAt}
@@ -93,67 +92,98 @@ const EventAddNew = () => {
                             style={inputStyle}
                         />
                         {errors.startAt ? (
-                            <span style={{ color: '#ffb4b4', fontSize: '0.9rem' }}>
+                            <span style={{ color: 'red', fontSize: '0.9rem' }}>
                                 {errors.startAt}
                             </span>
                         ) : null}
                     </label>
 
                     <label style={{ display: 'grid', gap: '0.35rem' }}>
-                        <span style={{ fontWeight: 600 }}>Duration in minutes</span>
+                        <span style={{ fontWeight: 600 }}>Player capacity</span>
                         <input
                             type="number"
                             min={1}
-                            max={1440}
-                            step={1}
-                            value={form.durationInMins}
-                            onChange={(event) => updateField('durationInMins', event.target.value)}
-                            style={inputStyle}
-                        />
-                    </label>
-
-                    <label style={{ display: 'grid', gap: '0.35rem' }}>
-                        <span style={{ fontWeight: 600 }}>Event player capacity</span>
-                        <input
-                            type="number"
-                            min={minCapacity}
                             max={30}
                             value={form.playerCapacity}
                             onChange={(event) => updateField('playerCapacity', event.target.value)}
                             style={inputStyle}
                         />
                         {errors.playerCapacity ? (
-                            <span style={{ color: '#ffb4b4', fontSize: '0.9rem' }}>
+                            <span style={{ color: 'red', fontSize: '0.9rem' }}>
                                 {errors.playerCapacity}
                             </span>
                         ) : null}
+                    </label>
+
+                    <label style={{ display: 'grid', gap: '0.35rem' }}>
+                        <span style={{ fontWeight: 600 }}>Duration (minutes)</span>
+                        <input
+                            type="number"
+                            min={1}
+                            value={form.durationInMins}
+                            onChange={(event) => updateField('durationInMins', event.target.value)}
+                            style={inputStyle}
+                        />
+                        {errors.durationInMins ? (
+                            <span style={{ color: 'red', fontSize: '0.9rem' }}>
+                                {errors.durationInMins}
+                            </span>
+                        ) : null}
+                    </label>
+
+                    <label style={{ display: 'grid', gap: '0.35rem' }}>
+                        <span style={{ fontWeight: 600 }}>Format</span>
+                        <select
+                            value={form.format}
+                            onChange={(event) => updateField('format', event.target.value)}
+                            style={inputStyle}
+                            disabled={!form.gameType || getFormatOptions().length === 0}
+                        >
+                            <option value="">Select a format</option>
+                            {getFormatOptions().map((formatOption) => (
+                                <option key={formatOption} value={formatOption}>
+                                    {formatOption}
+                                </option>
+                            ))}
+                        </select>
                     </label>
 
                     {message ? (
                         <p
                             style={{
                                 margin: 0,
-                                color: message.includes('successfully') ? '#b8f5c0' : '#ffb4b4',
+                                color: message.includes('successfully') ? 'green' : 'red',
                             }}
                         >
                             {message}
                         </p>
                     ) : null}
 
-                    <SubmitButton
+                    <button
+                        type="submit"
                         disabled={submitting}
-                        onClick={submitForm}
-                        cta_text_enabled="Create Event"
-                        cta_text_disabled="Creating..."
-                    />
+                        style={{
+                            padding: '0.8rem 1rem',
+                            borderRadius: '10px',
+                            border: 'none',
+                            background: submitting ? '#444' : '#fff',
+                            color: submitting ? '#ccc' : '#111',
+                            fontWeight: 700,
+                            cursor: submitting ? 'not-allowed' : 'pointer',
+                            width: 'fit-content',
+                        }}
+                    >
+                        {submitting ? 'Creating...' : 'Create Event'}
+                    </button>
                 </form>
             )}
 
             <SectionLinkRow
-                color="#000"
+                color="#111"
                 links={[
+                    { href: '/', label: 'home' },
                     { href: '/events', label: 'Back to events' },
-                    { href: '/', label: 'Back home' },
+                    { href: '/calendar', label: 'Go to calendar' },
                 ]}
             />
         </PageShell>

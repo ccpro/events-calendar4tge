@@ -1,23 +1,68 @@
-const formatDate = (dateString: string): string => {
-    try {
-        const date = new Date(dateString)
-        const formatted = new Intl.DateTimeFormat('en-US', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true // Use true for AM/PM
-        }).format(date)
-        return formatted
-    } catch {
-        return dateString
+
+const formatDate = (dateString: string | null | undefined): string => {
+    if (!dateString) {
+        return ''
     }
+
+    const dateUtc = new Date(dateString)
+
+    if (Number.isNaN(dateUtc.getTime())) {
+        return ''
+    }
+
+    const formatted = new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+    }).format(dateUtc)
+
+    return formatted
 }
 
 const isDateNewerThanNow = (dateString: string): boolean => {
-    const targetDate = new Date(dateString)
-    return targetDate.getTime() > Date.now()
+    const targetDateUtc = new Date(dateString)
+
+    if (Number.isNaN(targetDateUtc.getTime())) {
+        return false
+    }
+
+    return targetDateUtc.getTime() > Date.UTC(
+        new Date().getUTCFullYear(),
+        new Date().getUTCMonth(),
+        new Date().getUTCDate(),
+        new Date().getUTCHours(),
+        new Date().getUTCMinutes(),
+        new Date().getUTCSeconds(),
+        new Date().getUTCMilliseconds(),
+    )
 }
 
-export { formatDate, isDateNewerThanNow }
+const isSameDay = (left: Date | null, right: Date | null): boolean => {
+    if (!left || !right) {
+        return false
+    }
+
+    return (
+        left.getFullYear() === right.getFullYear() &&
+        left.getMonth() === right.getMonth() &&
+        left.getDate() === right.getDate()
+    )
+}
+
+const startsWithinNextHour = (dateString: string): boolean => {
+    const targetDateUtc = new Date(dateString)
+
+    if (Number.isNaN(targetDateUtc.getTime())) {
+        return false
+    }
+
+    const now = new Date()
+    const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000)
+
+    return targetDateUtc.getTime() >= now.getTime() && targetDateUtc.getTime() <= oneHourFromNow.getTime()
+}
+
+export { formatDate, isDateNewerThanNow, isSameDay, startsWithinNextHour }

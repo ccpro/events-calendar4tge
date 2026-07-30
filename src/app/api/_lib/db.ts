@@ -28,9 +28,9 @@ db.exec(`CREATE TABLE IF NOT EXISTS game_type (
     name varchar(256) NOT NULL,
     description TEXT,
     template varchar(256) NOT NULL,
-    format varchar(256) NOT NULL,
-    durationInMins INTEGER NOT NULL CHECK (durationInMins BETWEEN 1 AND 1440),
-    minPlayers INTEGER NOT NULL CHECK (minPlayers BETWEEN 1 AND 30),
+    format varchar(128) NOT NULL,
+    durationInMins INTEGER NOT NULL DEFAULT 60,
+    minimumPlayers INTEGER NOT NULL DEFAULT 2,
     createdAt datetime NOT NULL default (datetime('now'))
 )`)
 db.exec(`INSERT INTO game_type (name, description, template,format,durationInMins,minPlayers)
@@ -50,14 +50,27 @@ db.exec(`CREATE TABLE IF NOT EXISTS game_event (
     gameType INTEGER NOT NULL REFERENCES game_type(id),
     createdAt datetime NOT NULL default (datetime('now')),
     startAt datetime NOT NULL default (datetime('now')),
-    duration INTEGER NOT NULL CHECK (duration BETWEEN 1 AND 1440),
-    playerCapacity INTEGER NOT NULL CHECK (playerCapacity BETWEEN 1 AND 30)
+    playerCapacity INTEGER NOT NULL CHECK (playerCapacity BETWEEN 1 AND 30),
+    durationInMins INTEGER NOT NULL DEFAULT 60 CHECK (durationInMins >= 1)
+
 )`)
 
 // table alteration
 const gameEventColumns = db.prepare(`PRAGMA table_info(game_event)`).all() as { name: string }[]
 if (gameEventColumns.some((column) => column.name === 'player')) {
-    db.exec(`ALTER TABLE game_event DROP COLUMN player`)
+    try {
+        db.exec(`ALTER TABLE game_event DROP COLUMN player`)
+    } catch {
+        // ignore legacy migration failures and keep the bootstrap moving
+    }
+}
+
+if (!gameEventColumns.some((column) => column.name === 'durationInMins')) {
+    if (gameEventColumns.some((column) => column.name === 'duration')) {
+        db.exec(`ALTER TABLE game_event RENAME COLUMN duration TO durationInMins`)
+    } else {
+        db.exec(`ALTER TABLE game_event ADD COLUMN durationInMins INTEGER NOT NULL DEFAULT 60`)
+    }
 }
 
 const gameEventPlayersTable = db.prepare(`SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'game_event_players'`).get() as { name: string } | undefined

@@ -40,3 +40,123 @@
     padding: 0.5rem 0;
     text-align: center;
 }
+
+.calendarShell {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.calendarHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.calendarNavButton {
+    border: 1px solid #111;
+    border-radius: 999px;
+    background: transparent;
+    color: #111;
+    cursor: pointer;
+    padding: 0.35rem 0.7rem;
+}
+
+.calendarGrid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.35rem;
+}
+
+.calendarWeekday {
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    opacity: 0.75;
+}
+
+.calendarDayButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    background: #fafafa;
+    color: #111;
+    cursor: pointer;
+    padding: 0.35rem;
+}
+
+.calendarDayButtonOutOfMonth {
+    opacity: 0.45;
+}
+
+.calendarDayButtonSelected {
+    border-color: #111;
+    background: #111;
+    color: #fff;
+}
+
+.calendarDayButtonHasEvents {
+    border-color: #2f7fff;
+}
+
+.calendarDayBadge {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 999px;
+    background: currentColor;
+    margin-top: 0.25rem;
+}
+
+.calendarDayPanel {
+    display: grid;
+    gap: 0.5rem;
+    padding-top: 0.25rem;
+}
+
+.calendarEventList {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0;
+    padding-left: 1rem;
+}
+
+.calendarEventItem {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.calendarEventTableWrapper {
+    overflow-x: auto;
+}
+
+.calendarEventTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.calendarEventTable th,
+.calendarEventTable td {
+    border-bottom: 1px solid #e5e5e5;
+    padding: 0.45rem 0.35rem;
+    text-align: left;
+}
+
+.calendarEventTable th {
+    font-weight: 600;
+    color: #444;
+}
+
+.calendarEmptyState {
+    margin: 0;
+    opacity: 0.75;
+}

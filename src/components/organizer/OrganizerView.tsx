@@ -10,9 +10,11 @@ const OrganizerView = () => {
             eyebrow="Role"
             title="Store Organizers"
             links={[
-                { href: '/', label: 'Back home' },
+                { href: '/', label: 'home' },
                 { href: '/player', label: 'Switch to player view' },
-                { href: '/games', label: 'Games list' },
+                { href: '/calendar', label: 'Calendar view' },
+                { href: '/events', label: 'Events' },
+                { href: '/games', label: 'Games' },
             ]}
         >
             <OrganizerList />

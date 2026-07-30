@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { SectionLinkRow } from '@/components/common'
 import PageShell from '@/components/common/PageShell'
 import EventList from './EventList'
 
@@ -11,21 +11,16 @@ const EventView = () => {
             title="Available Events"
             description="Browse the full event catalog from this dedicated view."
             links={[
-                { href: '/', label: 'Back home' },
+                { href: '/', label: 'home' },
                 { href: '/games', label: 'Available games' },
                 { href: '/organizer', label: 'Go to organizer view' },
+                { href: '/calendar', label: 'Open calendar view' },
             ]}
         >
-            <Link
-                href="/events/new"
-                style={{
-                    display: 'inline-block',
-                    marginBottom: '1rem',
-                    textDecoration: 'underline',
-                }}
-            >
-                Add new event
-            </Link>
+            <SectionLinkRow
+                color="#111"
+                links={[{ href: '/events/new', label: 'Add new event' }]}
+            />
             <EventList viewType="list" />
         </PageShell>
     )
