@@ -1,12 +1,12 @@
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { QRCode } from 'react-qr-code'
+import { SubmitButton } from '../common'
 
 type GeneratePlayerAccountWithQrCodeProps = {
-    onRegister?: () => void
+    onRegister?: (httpLink: string) => void
 }
 
-// crypto.randomUUID requires a secure context; fall back for LAN/HTTP dev access
+// i know that's is bad practice, but it's necessary for LAN/HTTP dev access
 const generateUuid = () => {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
         const random = (Math.random() * 16) | 0
@@ -18,7 +18,11 @@ const generateUuid = () => {
 const GeneratePlayerAccountWithQrCode = ({ onRegister }: GeneratePlayerAccountWithQrCodeProps) => {
     const [ip, setIp] = useState('')
     const [error, setError] = useState<string | undefined>(undefined)
-    const [uuid] = useState(() => (typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : generateUuid()))
+    const [uuid] = useState(() =>
+        typeof window !== 'undefined' && window.isSecureContext && typeof globalThis.crypto?.randomUUID === 'function'
+            ? globalThis.crypto.randomUUID()
+            : generateUuid(),
+    )
 
     useEffect(() => {
         const loadData = async () => {
@@ -38,19 +42,27 @@ const GeneratePlayerAccountWithQrCode = ({ onRegister }: GeneratePlayerAccountWi
         return <p style={{ color: 'red' }}>{error}</p>
     }
 
-    const qr_registration_link = ip ? `http://${ip}:3000/api/register_player/${uuid}` : ''
+    const qrRegistrationLink = ip ? `http://${ip}:3000/api/register_player/${uuid}` : ''
 
     return (
         <div style={{ display: 'grid', gap: '0.75rem' }}>
-            {qr_registration_link ? (
-                <Link href={qr_registration_link} onClick={onRegister}>
-                    {qr_registration_link}
-                </Link>
+            {qrRegistrationLink ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '0.95rem', wordBreak: 'break-all' }}>
+                        {qrRegistrationLink}
+                    </span>
+                    <SubmitButton
+                        disabled={false}
+                        onClick={() => onRegister?.(qrRegistrationLink)}
+                        cta_text_enabled="Register player"
+                        cta_text_disabled="Register player"
+                    />
+                </div>
             ) : (
                 <span style={{ opacity: 0.7 }}>Loading registration link...</span>
             )}
             <QRCode
-                value={qr_registration_link || 'https://example.com'}
+                value={qrRegistrationLink || 'https://example.com'}
                 size={256}
                 bgColor="#FFFFFF"
                 fgColor="#000000"
