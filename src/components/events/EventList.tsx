@@ -7,7 +7,6 @@ import { Modal, SubmitButton } from '@/components/common'
 import { useSelectedRolesContext } from '@/context/SelectedRoles/SelectedRolesContext'
 import styles from '@/app/globals.module.css'
 import EventPlayerList from './players/EventPlayerList'
-import CalendarView from '../calendar/CalendarView'
 
 type EventListProps = {
     viewType: 'organizer' | 'player' | 'list'
