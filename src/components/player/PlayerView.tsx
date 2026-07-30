@@ -12,14 +12,15 @@ const PlayerView = () => {
     const { activeOrganizer, activePlayer } = useSelectedRolesContext()
     const [isRegisterOpen, setIsRegisterOpen] = useState(false)
 
-    const loadPlayers = useCallback(() => {
-        return undefined
-    }, [])
+    const [playerListRefreshKey, setPlayerListRefreshKey] = useState(0)
+
+    // PlayerList currently refreshes when the onRefresh callback identity changes.
+    const triggerPlayerListRefresh = useCallback(() => undefined, [playerListRefreshKey])
 
     const handleRegistered = useCallback(() => {
-        loadPlayers()
+        setPlayerListRefreshKey((value) => value + 1)
         setIsRegisterOpen(false)
-    }, [loadPlayers])
+    }, [])
 
     return (
         <PageShell
