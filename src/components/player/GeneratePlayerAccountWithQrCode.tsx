@@ -1,12 +1,13 @@
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { QRCode } from 'react-qr-code'
+import { randomUUID } from 'crypto'
+import { SubmitButton } from '../common'
 
 type GeneratePlayerAccountWithQrCodeProps = {
-    onRegister?: () => void
+    onRegister?: (http_link: string) => void
 }
 
-// crypto.randomUUID requires a secure context; fall back for LAN/HTTP dev access
+// i know that's is bad practice, but it's necessary for LAN/HTTP dev access
 const generateUuid = () => {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
         const random = (Math.random() * 16) | 0
@@ -18,7 +19,9 @@ const generateUuid = () => {
 const GeneratePlayerAccountWithQrCode = ({ onRegister }: GeneratePlayerAccountWithQrCodeProps) => {
     const [ip, setIp] = useState('')
     const [error, setError] = useState<string | undefined>(undefined)
-    const [uuid] = useState(() => (typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : generateUuid()))
+    const [uuid] = useState(() =>
+        typeof crypto !== 'undefined' && 'randomUUID' in crypto ? randomUUID() : generateUuid(),
+    )
 
     useEffect(() => {
         const loadData = async () => {
@@ -43,9 +46,15 @@ const GeneratePlayerAccountWithQrCode = ({ onRegister }: GeneratePlayerAccountWi
     return (
         <div style={{ display: 'grid', gap: '0.75rem' }}>
             {qr_registration_link ? (
-                <Link href={qr_registration_link} onClick={onRegister}>
-                    {qr_registration_link}
-                </Link>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '0.95rem', wordBreak: 'break-all' }}>{qr_registration_link}</span>
+                    <SubmitButton
+                        disabled={false}
+                        onClick={() => onRegister?.(qr_registration_link)}
+                        cta_text_enabled="Register player"
+                        cta_text_disabled="Register player"
+                    />
+                </div>
             ) : (
                 <span style={{ opacity: 0.7 }}>Loading registration link...</span>
             )}

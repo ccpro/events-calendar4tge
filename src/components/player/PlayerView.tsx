@@ -17,9 +17,19 @@ const PlayerView = () => {
     // PlayerList currently refreshes when the onRefresh callback identity changes.
     const triggerPlayerListRefresh = useCallback(() => undefined, [playerListRefreshKey])
 
-    const handleRegistered = useCallback(() => {
-        setPlayerListRefreshKey((value) => value + 1)
-        setIsRegisterOpen(false)
+    const handleRegistered = useCallback(async (httpLink: string) => {
+        try {
+            const response = await fetch(httpLink)
+
+            if (!response.ok) {
+                throw new Error('Failed to register player')
+            }
+
+            setPlayerListRefreshKey((value) => value + 1)
+            setIsRegisterOpen(false)
+        } catch (error) {
+            console.error('Failed to register player', error)
+        }
     }, [])
 
     return (

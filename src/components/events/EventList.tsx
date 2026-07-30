@@ -111,6 +111,7 @@ const EventList = ({ viewType }: EventListProps) => {
                         <th className={styles.tableHeaderCell}>Template</th>
                         <th className={styles.tableHeaderCell}>Created (utc)</th>
                         <th className={styles.tableHeaderCell}>Start (utc)</th>
+                        <th className={styles.tableHeaderCell}>Duration (mins)</th>
                         <th className={styles.tableHeaderCell}>Capacity/Players</th>
                         {viewType === 'player' && (
                             <th className={styles.tableHeaderCell}>Assigned</th>
@@ -126,6 +127,7 @@ const EventList = ({ viewType }: EventListProps) => {
                             <td className={styles.tableCellMono}>{event.template}</td>
                             <td className={styles.tableCell}>{formatDate(event.createdAt)}</td>
                             <td className={styles.tableCell}>{formatDate(event.startAt)}</td>
+                            <td className={styles.tableCellCentered}>{event.duration}</td>
                             <td className={styles.tableCellCentered}>
                                 {event.playerCapacity}/{event.playersAssigned ?? 0}
                             </td>

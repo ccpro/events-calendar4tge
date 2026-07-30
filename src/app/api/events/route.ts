@@ -8,6 +8,7 @@ export async function POST(request: Request) {
         const gameType = Number(body?.gameType)
         const startAt = typeof body?.startAt === 'string' ? body.startAt.trim() : ''
         const playerCapacity = Number(body?.playerCapacity)
+        const duration = Number(body?.duration ?? 0)
 
         if (!Number.isInteger(organizer) || organizer <= 0) {
             return NextResponse.json({ error: 'A valid organizer is required.' }, { status: 400 })
@@ -24,13 +25,16 @@ export async function POST(request: Request) {
         if (!Number.isInteger(playerCapacity) || playerCapacity < 1 || playerCapacity > 30) {
             return NextResponse.json({ error: 'Player capacity must be between 1 and 30.' }, { status: 400 })
         }
+        if (!Number.isInteger(duration) || duration < 0) {
+            return NextResponse.json({ error: 'Duration must be a non-negative number.' }, { status: 400 })
+        }
 
         const result = db
             .prepare(`
-                INSERT INTO game_event (organizer, gameType, startAt, playerCapacity)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO game_event (organizer, gameType, startAt, playerCapacity,duration)
+                VALUES (?, ?, ?, ?, ?)
             `)
-            .run(organizer, gameType, startAt, playerCapacity)
+            .run(organizer, gameType, startAt, playerCapacity, duration)
 
         const event = db
             .prepare(`
@@ -44,6 +48,7 @@ export async function POST(request: Request) {
                     ge.startAt,
                     ge.playerCapacity,
                     organizer_role.name AS organizerName,
+                    ge.duration,
                     (SELECT COUNT(*) FROM game_event_players gep WHERE gep.gameEventId = ge.id) AS playersAssigned
                 FROM game_event ge
                 JOIN game_type gt ON gt.id = ge.gameType
@@ -86,6 +91,7 @@ export async function GET(request: Request) {
                     ge.startAt,
                     ge.playerCapacity,
                     organizer_role.name AS organizerName,
+                    ge.duration,
                     (SELECT COUNT(*) FROM game_event_players gep WHERE gep.gameEventId = ge.id) AS playersAssigned,
                     EXISTS(
                         SELECT 1 FROM game_event_players gep2

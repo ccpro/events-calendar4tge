@@ -21,7 +21,6 @@ const EventView = () => {
                 style={{
                     display: 'inline-block',
                     marginBottom: '1rem',
-                    color: '#fff',
                     textDecoration: 'underline',
                 }}
             >

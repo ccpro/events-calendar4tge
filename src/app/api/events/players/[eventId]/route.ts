@@ -13,17 +13,17 @@ export async function GET(
     }
 
     try {
-        // const event = db
-        //     .prepare(`
-        //         SELECT id
-        //         FROM game_event
-        //         WHERE id = ?
-        //     `)
-        //     .get(eventId)
+        const event = db
+            .prepare(`
+                SELECT id
+                FROM game_event
+                WHERE id = ?
+            `)
+            .get(eventId)
 
-        // if (!event) {
-        //     return NextResponse.json({ error: 'Event not found.' }, { status: 404 })
-        // }
+        if (!event) {
+            return NextResponse.json({ error: 'Event not found.' }, { status: 404 })
+        }
 
         const players = db
             .prepare(`
