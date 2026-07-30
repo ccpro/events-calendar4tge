@@ -11,3 +11,7 @@ npm install --save-dev @types/better-sqlite3
 ## qr code to create player account and register for a game
 
 npm install react-qr-code
+
+## ics library
+
+npm install ics
