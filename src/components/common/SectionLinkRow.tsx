@@ -4,13 +4,26 @@ import Link from 'next/link'
 import { ReactNode } from 'react'
 
 type SectionLinkRowProps = {
-    links: Array<{ href: string; label: string; color?: string; className?: string }>
+    background?: string
+    links: Array<{
+        href: string
+        label: string
+        color?: string
+        background?: string
+        className?: string
+    }>
     color?: string
     className?: string
     children?: ReactNode
 }
 
-const SectionLinkRow = ({ links, color = 'white', className, children }: SectionLinkRowProps) => {
+const SectionLinkRow = ({
+    links,
+    color = 'white',
+    background = 'transparent',
+    className,
+    children,
+}: SectionLinkRowProps) => {
     return (
         <div
             className={className}
@@ -25,7 +38,11 @@ const SectionLinkRow = ({ links, color = 'white', className, children }: Section
                     style={
                         link.className
                             ? undefined
-                            : { color: link.color ?? color, textDecoration: 'underline' }
+                            : {
+                                  color: link.color ?? color,
+                                  background: link.background ?? background,
+                                  textDecoration: 'underline',
+                              }
                     }
                 >
                     {link.label}

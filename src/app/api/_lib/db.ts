@@ -50,6 +50,7 @@ db.exec(`CREATE TABLE IF NOT EXISTS game_event (
     gameType INTEGER NOT NULL REFERENCES game_type(id),
     createdAt datetime NOT NULL default (datetime('now')),
     startAt datetime NOT NULL default (datetime('now')),
+    format varchar(128) NOT NULL,
     playerCapacity INTEGER NOT NULL CHECK (playerCapacity BETWEEN 1 AND 30),
     durationInMins INTEGER NOT NULL DEFAULT 60 CHECK (durationInMins >= 1)
 )`)
@@ -63,6 +64,11 @@ if (gameEventColumns.some((column) => column.name === 'player')) {
         // ignore legacy migration failures and keep the bootstrap moving
     }
 }
+
+if (!gameEventColumns.some((column) => column.name === 'format')) {
+    db.exec(`ALTER TABLE game_event ADD COLUMN format varchar(128) NOT NULL DEFAULT 'standard'`)
+}
+
 
 if (!gameEventColumns.some((column) => column.name === 'durationInMins')) {
     if (gameEventColumns.some((column) => column.name === 'duration')) {

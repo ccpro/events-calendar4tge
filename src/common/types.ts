@@ -39,6 +39,7 @@ type Event = {
     playersAssigned: number
     minimumPlayers: number
     isAssigned: boolean
+    format: string
 }
 
 export type { Organizer, Player, Game, Event }

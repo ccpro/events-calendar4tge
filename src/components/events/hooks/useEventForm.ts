@@ -75,7 +75,6 @@ export const useEventForm = (initialOrganizerId?: number) => {
         const nextErrors: EventFormErrors = {}
         const playerCapacity = Number(form.playerCapacity)
         const durationInMins = Number(form.durationInMins)
-        const minimumPlayers = Number(form.minimumPlayers)
 
         if (!form.organizer) {
             nextErrors.organizer = 'Organizer is required.'
@@ -89,8 +88,8 @@ export const useEventForm = (initialOrganizerId?: number) => {
             nextErrors.startAt = 'Start date is required.'
         }
 
-        if (!Number.isInteger(playerCapacity) || playerCapacity < minimumPlayers || playerCapacity > 30) {
-            nextErrors.playerCapacity = `Player capacity must be between ${minimumPlayers} and 30.`
+        if (!Number.isInteger(playerCapacity) || playerCapacity < 1 || playerCapacity > 30) {
+            nextErrors.playerCapacity = 'Player capacity must be between 1 and 30.'
         }
 
         if (!Number.isInteger(durationInMins) || durationInMins < 1) {
@@ -182,6 +181,7 @@ export const useEventForm = (initialOrganizerId?: number) => {
                         startAt: form.startAt,
                         playerCapacity: Number(form.playerCapacity),
                         durationInMins: Number(form.durationInMins),
+                        format: form.format,
                     }),
                 })
 

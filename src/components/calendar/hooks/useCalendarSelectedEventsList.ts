@@ -12,6 +12,10 @@ type EventStatus = {
     state: EventState
 }
 
+const getRegistrationForm = (eventId: number, playerId: number, ip: string) => {
+    return `http://${ip || 'localhost'}:3000/register/event/${eventId}/${playerId}`
+}
+
 const useCalendarSelectedEventsList = (onRefresh?: () => void) => {
     const { activePlayer } = useSelectedRolesContext()
 
@@ -67,28 +71,29 @@ const useCalendarSelectedEventsList = (onRefresh?: () => void) => {
     const signupForEvent = useCallback(
         async (eventId: number) => {
             if (!activePlayer) {
-                return
+                return false
             }
 
             try {
                 const response = await fetch(`/api/events/assign/${eventId}/${activePlayer.id}`, {
                     method: 'POST',
                 })
-                if (!response.ok) {
-                    return
+                if (!response?.ok) {
+                    return false
                 }
 
-                await onRefresh?.()
+                return true
             } catch {
-                // ignore signup failures for now
+                return false
             }
         },
-        [activePlayer, onRefresh],
+        [activePlayer],
     )
 
     return {
         eventStatus,
         signupForEvent,
+        getRegistrationForm,
     }
 }
 

@@ -91,8 +91,8 @@ const GeneratePlayerAccountWithQrCode = ({ onRegister }: GeneratePlayerAccountWi
             <QRCode
                 value={qr_registration_link || 'https://example.com'}
                 size={256}
-                bgColor="whiteFFF"
-                fgColor="#000000"
+                bgColor="white"
+                fgColor="black"
                 level="H"
             />
         </div>

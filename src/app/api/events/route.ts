@@ -9,6 +9,7 @@ export async function POST(request: Request) {
         const startAt = typeof body?.startAt === 'string' ? body.startAt.trim() : ''
         const playerCapacity = Number(body?.playerCapacity)
         const durationInMins = Number(body?.durationInMins)
+        const format = typeof body?.format === 'string' ? body.format.trim() : 'standard'
 
         if (!Number.isInteger(organizer) || organizer <= 0) {
             return NextResponse.json({ error: 'A valid organizer is required.' }, { status: 400 })
@@ -30,12 +31,11 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Duration must be at least 2 minutes.' }, { status: 400 })
         }
 
-        const insertColumns = `organizer, gameType, startAt, playerCapacity, durationInMins`
-        const insertValues = [organizer, gameType, startAt, playerCapacity, durationInMins]
+        const insertValues = [organizer, gameType, startAt, playerCapacity, durationInMins, format]
 
         const result = db
             .prepare(`
-                INSERT INTO game_event (${insertColumns})
+                INSERT INTO game_event (organizer, gameType, startAt, playerCapacity, durationInMins, format)
                 VALUES (${insertValues.map(() => '?').join(', ')})
             `)
             .run(...insertValues)
@@ -53,6 +53,7 @@ export async function POST(request: Request) {
                     ge.playerCapacity,
                     ge.durationInMins,
                     gt.minimumPlayers,
+                    ge.format,
                     datetime(ge.startAt, '+' || ge.durationInMins || ' minutes') AS endAt,
                     organizer_role.name AS organizerName,
                     (SELECT COUNT(*) FROM game_event_players gep WHERE gep.gameEventId = ge.id) AS playersAssigned
@@ -100,6 +101,7 @@ export async function GET(request: Request) {
                     datetime(ge.startAt, '+' || ge.durationInMins || ' minutes') AS endAt,
                     organizer_role.name AS organizerName,
                     gt.minimumPlayers,
+                    ge.format,
                     (SELECT COUNT(*) FROM game_event_players gep WHERE gep.gameEventId = ge.id) AS playersAssigned,
                     EXISTS(
                         SELECT 1 FROM game_event_players gep2
