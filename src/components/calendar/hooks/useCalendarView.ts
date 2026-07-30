@@ -21,12 +21,18 @@ export const useCalendarView = () => {
 
         try {
             const response = await fetch(`/api/events?playerId=${activePlayer?.id ?? ''}`)
-            if (!response.ok) {
-                throw new Error(`Request failed with status ${response.status}`)
+            if (!response?.ok) {
+                throw new Error('Unable to load events')
             }
 
             const data = await response.json()
-            setEvents(data.events ?? [])
+            const loadedEvents = Array.isArray(data?.events)
+                ? data.events
+                : Array.isArray(data)
+                    ? data
+                    : []
+
+            setEvents(loadedEvents)
         } catch (err) {
             setEvents([])
             setError(err instanceof Error ? err.message : 'Unable to load events')

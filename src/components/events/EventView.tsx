@@ -19,6 +19,7 @@ const EventView = () => {
         >
             <SectionLinkRow
                 color="black"
+                background="lightgray"
                 links={[{ href: '/events/new', label: 'Add new event' }]}
             />
             <EventList viewType="list" />

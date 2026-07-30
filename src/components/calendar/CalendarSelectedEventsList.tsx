@@ -1,10 +1,13 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { formatDate } from '@/app/common/dateUtils'
 import type { Event } from '@/common/types'
 import styles from '@/app/globals.module.css'
-import { SubmitButton } from '../common'
+import { Modal, SubmitButton } from '../common'
 import useCalendarSelectedEventsList from './hooks/useCalendarSelectedEventsList'
+import QRCode from 'react-qr-code'
+import { useSelectedRolesContext } from '@/context/SelectedRoles/SelectedRolesContext'
 
 type CalendarSelectedEventsListProps = {
     events: Event[]
@@ -12,7 +15,56 @@ type CalendarSelectedEventsListProps = {
 }
 
 const CalendarSelectedEventsList = ({ events, onRefresh }: CalendarSelectedEventsListProps) => {
-    const { eventStatus, signupForEvent } = useCalendarSelectedEventsList(onRefresh)
+    const { eventStatus, signupForEvent, getRegistrationForm } =
+        useCalendarSelectedEventsList(onRefresh)
+    const { activePlayer } = useSelectedRolesContext()
+    const [pendingEvent, setPendingEvent] = useState<Event | null>(null)
+    const [ip, setIp] = useState('')
+
+    useEffect(() => {
+        if (!pendingEvent) {
+            return
+        }
+
+        const loadIp = async () => {
+            try {
+                const response = await fetch('/api/ip')
+
+                if (!response?.ok) {
+                    setIp('')
+                    return
+                }
+
+                const data = await response.json().catch(() => ({}))
+                setIp(typeof data.ip === 'string' ? data.ip : '')
+            } catch {
+                setIp('')
+            }
+        }
+
+        void loadIp()
+    }, [pendingEvent])
+
+    const registrationForm =
+        pendingEvent && activePlayer
+            ? getRegistrationForm(pendingEvent.id, activePlayer.id, ip)
+            : ''
+
+    const handleCloseModal = () => {
+        setPendingEvent(null)
+        onRefresh?.()
+    }
+
+    const handleConfirmSignup = async () => {
+        if (!pendingEvent) {
+            return
+        }
+
+        const isSignedUp = await signupForEvent(pendingEvent.id)
+        if (isSignedUp) {
+            handleCloseModal()
+        }
+    }
 
     if (events.length === 0) {
         return <p className={styles.calendarEmptyState}>No events scheduled for this day.</p>
@@ -25,6 +77,7 @@ const CalendarSelectedEventsList = ({ events, onRefresh }: CalendarSelectedEvent
                         <th>Game Name</th>
                         <th>Start Date</th>
                         <th>Duration</th>
+                        <th>Format</th>
                         <th>Status</th>
                         <th>Signup</th>
                     </tr>
@@ -32,12 +85,12 @@ const CalendarSelectedEventsList = ({ events, onRefresh }: CalendarSelectedEvent
                 <tbody>
                     {events.map((event) => {
                         const status = eventStatus(event)
-                        console.log(status)
                         return (
                             <tr key={event.id}>
                                 <td title={event.description ?? ''}>{event.name}</td>
                                 <td>{formatDate(event.startAt)}</td>
                                 <td>{event.durationInMins} mins</td>
+                                <td>{event.format}</td>
                                 <td title={status.tooltip} style={{ color: status.color }}>
                                     {status.title}
                                 </td>
@@ -48,7 +101,7 @@ const CalendarSelectedEventsList = ({ events, onRefresh }: CalendarSelectedEvent
                                         cta_text_disabled={
                                             status.state === 'past' ? 'Past' : 'Booked'
                                         }
-                                        onClick={() => signupForEvent(event.id)}
+                                        onClick={() => setPendingEvent(event)}
                                     />
                                 </td>
                             </tr>
@@ -56,6 +109,62 @@ const CalendarSelectedEventsList = ({ events, onRefresh }: CalendarSelectedEvent
                     })}
                 </tbody>
             </table>
+
+            <Modal open={Boolean(pendingEvent)} onClose={handleCloseModal} title="Confirm signup">
+                <div style={{ display: 'grid', gap: '1rem' }}>
+                    {registrationForm ? (
+                        <>
+                            <a
+                                href={registrationForm}
+                                target="_blank"
+                                rel="noreferrer"
+                                style={{ wordBreak: 'break-all' }}
+                            >
+                                {registrationForm}
+                            </a>
+                            <QRCode
+                                value={registrationForm}
+                                size={256}
+                                bgColor="white"
+                                fgColor="black"
+                                level="H"
+                            />
+                        </>
+                    ) : (
+                        <p style={{ margin: 0 }}>Loading registration link...</p>
+                    )}
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+                        <button
+                            type="button"
+                            onClick={handleCloseModal}
+                            style={{
+                                padding: '0.5rem 0.9rem',
+                                borderRadius: '8px',
+                                border: '1px solid black',
+                                background: 'transparent',
+                                color: 'black',
+                                cursor: 'pointer',
+                            }}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleConfirmSignup}
+                            style={{
+                                padding: '0.5rem 0.9rem',
+                                borderRadius: '8px',
+                                border: 'none',
+                                background: 'black',
+                                color: 'white',
+                                cursor: 'pointer',
+                            }}
+                        >
+                            Confirm
+                        </button>
+                    </div>
+                </div>
+            </Modal>
         </div>
     )
 }

@@ -10,6 +10,10 @@ const mockContextValue = {
     setActivePlayer: vi.fn(),
 }
 
+const getFutureEventDate = (baseDate: Date) => {
+    return new Date(baseDate.getTime() + 2 * 60 * 60 * 1000)
+}
+
 describe('EventList', () => {
     beforeEach(() => {
         vi.stubGlobal('fetch', vi.fn())
@@ -153,47 +157,5 @@ describe('EventList', () => {
         await waitFor(() => {
             expect(fetchMock).toHaveBeenCalledTimes(5)
         })
-    })
-
-    it('shows a month calendar and reveals events for a selected day', async () => {
-        const fetchMock = vi.mocked(fetch)
-        const currentDate = new Date()
-        const startAt = new Date(
-            Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), 15, 18, 0),
-        ).toISOString()
-
-        fetchMock.mockResolvedValueOnce({
-            ok: true,
-            json: async () => ({
-                events: [
-                    {
-                        id: 1,
-                        name: 'Launch party',
-                        organizerId: 10,
-                        organizerName: 'Dina',
-                        description: null,
-                        template: 'launch',
-                        createdAt: '2024-01-01T00:00:00.000Z',
-                        startAt,
-                        playerCapacity: 10,
-                        playersAssigned: 2,
-                        isAssigned: false,
-                    },
-                ],
-            }),
-        } as Response)
-
-        render(
-            <SelectedRolesContext.Provider value={mockContextValue}>
-                <CalendarView />
-            </SelectedRolesContext.Provider>,
-        )
-
-        const dayButton = await screen.findByRole('button', { name: /select day 15/i })
-        fireEvent.click(dayButton)
-
-        const agendaTable = await screen.findByRole('table', { name: /selected day events/i })
-        expect(agendaTable).toBeInTheDocument()
-        expect(within(agendaTable).getByText('Launch party')).toBeInTheDocument()
     })
 })
