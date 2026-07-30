@@ -19,7 +19,9 @@ const GeneratePlayerAccountWithQrCode = ({ onRegister }: GeneratePlayerAccountWi
     const [ip, setIp] = useState('')
     const [error, setError] = useState<string | undefined>(undefined)
     const [uuid] = useState(() =>
-        typeof crypto !== 'undefined' && 'randomUUID' in crypto ? randomUUID() : generateUuid(),
+        typeof window !== 'undefined' && window.isSecureContext && typeof globalThis.crypto?.randomUUID === 'function'
+            ? globalThis.crypto.randomUUID()
+            : generateUuid(),
     )
 
     useEffect(() => {
