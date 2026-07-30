@@ -56,6 +56,9 @@ const GameList = () => {
                         <th className={styles.tableHeaderCell}>Name</th>
                         <th className={styles.tableHeaderCell}>Description</th>
                         <th className={styles.tableHeaderCell}>Template</th>
+                        <th className={styles.tableHeaderCell}>Duration (mins)</th>
+                        <th className={styles.tableHeaderCell}>Minimum Players</th>
+                        <th className={styles.tableHeaderCell}>Format</th>
                         <th className={styles.tableHeaderCell}>Created (utc)</th>
                     </tr>
                 </thead>
@@ -64,7 +67,10 @@ const GameList = () => {
                         <tr key={template.id} className={styles.tableBodyRow}>
                             <td className={styles.tableCell}>{template.name}</td>
                             <td className={styles.tableCell}>{template.description}</td>
-                            <td className={styles.tableCellMono}>{template.template}</td>
+                            <td className={styles.tableCell}>{template.template}</td>
+                            <td className={styles.tableCell}>{template.durationInMins}</td>
+                            <td className={styles.tableCell}>{template.minimumPlayers}</td>
+                            <td className={styles.tableCell}>{template.format}</td>
                             <td className={styles.tableCell}>{formatDate(template.createdAt)}</td>
                         </tr>
                     ))}

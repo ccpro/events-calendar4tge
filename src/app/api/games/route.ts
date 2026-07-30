@@ -5,7 +5,7 @@ export async function GET() {
     try {
         const gameTypes = db
             .prepare(`
-                SELECT id, name, description, template, createdAt
+                SELECT id, name, description, template, createdAt, durationInMins, minimumPlayers, format
                 FROM game_type
                 ORDER BY createdAt DESC
             `)
@@ -25,6 +25,8 @@ export async function POST(request: Request) {
         const name = typeof body?.name === 'string' ? body.name.trim() : ''
         const description = typeof body?.description === 'string' ? body.description.trim() : ''
         const template = typeof body?.template === 'string' ? body.template.trim() : ''
+        const duration = body?.durationInMins ?? 10
+        const minimumPlayers = body?.minimumPlayers ?? 2
 
         if (!name || !template) {
             return NextResponse.json({ error: 'Name and template are required.' }, { status: 400 })
@@ -40,14 +42,14 @@ export async function POST(request: Request) {
 
         const result = db
             .prepare(`
-                INSERT INTO game_type (name, description, template)
-                VALUES (?, ?, ?)
+                INSERT INTO game_type (name, description, template, durationInMins, minimumPlayers, format)
+                VALUES (?, ?, ?, ?, ?, ?)
             `)
-            .run(name, description || null, template)
+            .run(name, description || null, template, duration, minimumPlayers, body?.format ?? null)
 
         const gameType = db
             .prepare(`
-                SELECT id, name, description, template, createdAt
+                SELECT id, name, description, template, createdAt, durationInMins, minimumPlayers, format
                 FROM game_type
                 WHERE id = ?
             `)

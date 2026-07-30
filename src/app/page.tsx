@@ -17,6 +17,13 @@ const Home = () => {
                                 className: styles.primary,
                             },
                             { href: '/player', label: 'player', className: styles.secondary },
+                        ]}
+                    />
+                    <h2>or review:</h2>
+                    <SectionLinkRow
+                        className={styles.ctas}
+                        links={[
+                            { href: '/calendar', label: 'calendar', className: styles.secondary },
                             { href: '/events', label: 'events', className: styles.secondary },
                             { href: '/games', label: 'games', className: styles.secondary },
                         ]}

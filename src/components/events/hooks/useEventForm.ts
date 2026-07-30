@@ -7,6 +7,8 @@ export type EventFormState = {
     gameType: string
     startAt: string
     playerCapacity: string
+    durationInMins: string
+    format: string
 }
 
 export type EventFormErrors = Partial<Record<keyof EventFormState, string>>
@@ -16,6 +18,8 @@ export const initialFormState: EventFormState = {
     gameType: '',
     startAt: '',
     playerCapacity: '4',
+    durationInMins: '60',
+    format: '',
 }
 
 export const useEventForm = (initialOrganizerId?: number) => {
@@ -46,7 +50,7 @@ export const useEventForm = (initialOrganizerId?: number) => {
                 const gameTypeData = await gameTypeRes.json().catch(() => ({}))
 
                 setOrganizers(organizerData.organizers ?? [])
-                setGameTypes(gameTypeData.gameTypes ?? [])
+                setGameTypes(gameTypeData.gameTypes ?? gameTypeData.games ?? [])
             } catch {
                 setOrganizers([])
                 setGameTypes([])
@@ -68,6 +72,7 @@ export const useEventForm = (initialOrganizerId?: number) => {
     const validate = useCallback(() => {
         const nextErrors: EventFormErrors = {}
         const playerCapacity = Number(form.playerCapacity)
+        const durationInMins = Number(form.durationInMins)
 
         if (!form.organizer) {
             nextErrors.organizer = 'Organizer is required.'
@@ -85,13 +90,69 @@ export const useEventForm = (initialOrganizerId?: number) => {
             nextErrors.playerCapacity = 'Player capacity must be between 1 and 30.'
         }
 
+        if (!Number.isInteger(durationInMins) || durationInMins < 1) {
+            nextErrors.durationInMins = 'Duration must be at least 1 minute.'
+        }
+
         return nextErrors
-    }, [form.organizer, form.gameType, form.startAt, form.playerCapacity])
+    }, [form.organizer, form.gameType, form.startAt, form.playerCapacity, form.durationInMins])
 
     const updateField = useCallback((field: keyof EventFormState, value: string) => {
-        setForm((current) => ({ ...current, [field]: value }))
+        setForm((current) => {
+            const nextState = { ...current, [field]: value }
+
+            if (field === 'gameType') {
+                const selectedGame = gameTypes.find((gameType) => String(gameType.id) === value)
+
+                if (selectedGame) {
+                    if (selectedGame.minPlayers !== undefined && (!current.playerCapacity || current.playerCapacity === String(initialFormState.playerCapacity))) {
+                        nextState.playerCapacity = String(selectedGame.minPlayers)
+                    }
+
+                    if (selectedGame.durationInMins !== undefined) {
+                        nextState.durationInMins = String(selectedGame.durationInMins)
+                    }
+
+                    if (selectedGame.format) {
+                        const [firstFormat] = getFormatOptionsFromGame(selectedGame)
+                        nextState.format = firstFormat ?? ''
+                    }
+                }
+            }
+
+            return nextState
+        })
         setErrors((current) => ({ ...current, [field]: undefined }))
-    }, [])
+    }, [gameTypes])
+
+    useEffect(() => {
+        if (!form.gameType) {
+            return
+        }
+
+        const selectedGame = gameTypes.find((gameType) => String(gameType.id) === form.gameType)
+
+        if (selectedGame) {
+            setForm((current) => {
+                const nextState = { ...current }
+
+                if (selectedGame.minPlayers !== undefined && (!current.playerCapacity || current.playerCapacity === String(initialFormState.playerCapacity))) {
+                    nextState.playerCapacity = String(selectedGame.minPlayers)
+                }
+
+                if (selectedGame.durationInMins !== undefined && current.durationInMins === initialFormState.durationInMins) {
+                    nextState.durationInMins = String(selectedGame.durationInMins)
+                }
+
+                if (selectedGame.format && (!current.format || current.format === initialFormState.format)) {
+                    const [firstFormat] = getFormatOptionsFromGame(selectedGame)
+                    nextState.format = firstFormat ?? ''
+                }
+
+                return nextState
+            })
+        }
+    }, [form.gameType, gameTypes])
 
     const handleSubmit = useCallback(
         async (event: FormEvent<HTMLFormElement>) => {
@@ -117,6 +178,7 @@ export const useEventForm = (initialOrganizerId?: number) => {
                         gameType: Number(form.gameType),
                         startAt: form.startAt,
                         playerCapacity: Number(form.playerCapacity),
+                        durationInMins: Number(form.durationInMins),
                     }),
                 })
 
@@ -141,6 +203,16 @@ export const useEventForm = (initialOrganizerId?: number) => {
         [form, validate, initialOrganizerId],
     )
 
+    const getFormatOptions = useCallback(() => {
+        if (!form.gameType) {
+            return []
+        }
+
+        const selectedGame = gameTypes.find((gameType) => String(gameType.id) === form.gameType)
+
+        return selectedGame ? getFormatOptionsFromGame(selectedGame) : []
+    }, [form.gameType, gameTypes])
+
     return {
         form,
         errors,
@@ -152,5 +224,17 @@ export const useEventForm = (initialOrganizerId?: number) => {
         validate,
         updateField,
         handleSubmit,
+        getFormatOptions,
     }
+}
+
+const getFormatOptionsFromGame = (game: Game): string[] => {
+    if (!game.format) {
+        return []
+    }
+
+    return game.format
+        .split('|')
+        .map((item) => item.trim())
+        .filter(Boolean)
 }

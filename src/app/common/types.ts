@@ -18,7 +18,10 @@ type Game = {
     description: string | null
     template: string
     createdAt: string
-    isAssigned: number | boolean
+    isAssigned?: number | boolean
+    durationInMins?: number
+    minimumPlayers?: number
+    format?: string
 }
 
 type Event = {

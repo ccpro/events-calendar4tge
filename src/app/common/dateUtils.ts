@@ -16,4 +16,16 @@ const isDateNewerThanNow = (dateString: string): boolean => {
     return targetDate.getTime() > Date.now()
 }
 
-export { formatDate, isDateNewerThanNow }
+const isSameDay = (left: Date | null, right: Date | null): boolean => {
+    if (!left || !right) {
+        return false
+    }
+
+    return (
+        left.getFullYear() === right.getFullYear() &&
+        left.getMonth() === right.getMonth() &&
+        left.getDate() === right.getDate()
+    )
+}
+
+export { formatDate, isDateNewerThanNow, isSameDay }

@@ -1,5 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { isDateNewerThanNow } from './dateUtils'
+import { isDateNewerThanNow, isSameDay } from './dateUtils'
+
+describe('isSameDay', () => {
+    it('returns true for two dates that fall on the same calendar day', () => {
+        expect(isSameDay(new Date('2024-01-01T08:00:00.000Z'), new Date('2024-01-01T20:00:00.000Z'))).toBe(true)
+    })
+
+    it('returns false for different days or missing values', () => {
+        expect(isSameDay(new Date('2024-01-01T00:00:00.000Z'), new Date('2024-01-02T00:00:00.000Z'))).toBe(false)
+        expect(isSameDay(null, new Date('2024-01-01T00:00:00.000Z'))).toBe(false)
+        expect(isSameDay(new Date('2024-01-01T00:00:00.000Z'), null)).toBe(false)
+    })
+})
 
 describe('isDateNewerThanNow', () => {
     beforeEach(() => {

@@ -25,6 +25,7 @@ const EventAddNew = () => {
         loadingOptions,
         updateField,
         handleSubmit,
+        getFormatOptions,
     } = useEventForm(activeOrganizer?.id)
 
     return (
@@ -114,6 +115,39 @@ const EventAddNew = () => {
                         ) : null}
                     </label>
 
+                    <label style={{ display: 'grid', gap: '0.35rem' }}>
+                        <span style={{ fontWeight: 600 }}>Duration (minutes)</span>
+                        <input
+                            type="number"
+                            min={1}
+                            value={form.durationInMins}
+                            onChange={(event) => updateField('durationInMins', event.target.value)}
+                            style={inputStyle}
+                        />
+                        {errors.durationInMins ? (
+                            <span style={{ color: '#ffb4b4', fontSize: '0.9rem' }}>
+                                {errors.durationInMins}
+                            </span>
+                        ) : null}
+                    </label>
+
+                    <label style={{ display: 'grid', gap: '0.35rem' }}>
+                        <span style={{ fontWeight: 600 }}>Format</span>
+                        <select
+                            value={form.format}
+                            onChange={(event) => updateField('format', event.target.value)}
+                            style={inputStyle}
+                            disabled={!form.gameType || getFormatOptions().length === 0}
+                        >
+                            <option value="">Select a format</option>
+                            {getFormatOptions().map((formatOption) => (
+                                <option key={formatOption} value={formatOption}>
+                                    {formatOption}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+
                     {message ? (
                         <p
                             style={{
@@ -145,10 +179,10 @@ const EventAddNew = () => {
             )}
 
             <SectionLinkRow
-                color="#fff"
+                color="#111"
                 links={[
-                    { href: '/events', label: 'Back to events list' },
                     { href: '/', label: 'Back home' },
+                    { href: '/events', label: 'Back to events' },
                 ]}
             />
         </PageShell>

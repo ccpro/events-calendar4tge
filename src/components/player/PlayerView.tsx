@@ -29,6 +29,7 @@ const PlayerView = () => {
             links={[
                 { href: '/', label: 'Back home', color: '#111' },
                 { href: '/organizer', label: 'Switch to organizer view', color: '#111' },
+                { href: '/calendar', label: 'Calendar view' },
             ]}
         >
             {activeOrganizer && (

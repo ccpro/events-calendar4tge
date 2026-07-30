@@ -1,9 +1,14 @@
 import { FormEvent, useCallback, useState } from 'react'
 
+type SubmitEventLike = Pick<FormEvent<HTMLFormElement>, 'preventDefault'>
+
 export type GameTypeFormState = {
     name: string
     description: string
     template: string
+    durationInMins: string
+    minimumPlayers: string
+    format: string
 }
 
 export type GameTypeFormErrors = Partial<Record<keyof GameTypeFormState, string>>
@@ -12,6 +17,9 @@ export const initialFormState: GameTypeFormState = {
     name: '',
     description: '',
     template: '',
+    durationInMins: '60',
+    minimumPlayers: '2',
+    format: 'standard',
 }
 
 export const useGameTypeForm = () => {
@@ -37,8 +45,18 @@ export const useGameTypeForm = () => {
             nextErrors.template = 'Template can only contain letters, numbers, and hyphens.'
         }
 
+        const durationInMins = Number(form.durationInMins)
+        if (!Number.isInteger(durationInMins) || durationInMins < 1) {
+            nextErrors.durationInMins = 'Duration must be at least 1 minute.'
+        }
+
+        const minimumPlayers = Number(form.minimumPlayers)
+        if (!Number.isInteger(minimumPlayers) || minimumPlayers < 1) {
+            nextErrors.minimumPlayers = 'Minimum players must be at least 1.'
+        }
+
         return nextErrors
-    }, [form.name, form.template])
+    }, [form.durationInMins, form.minimumPlayers, form.name, form.template])
 
     const updateField = useCallback((field: keyof GameTypeFormState, value: string) => {
         setForm((current) => ({ ...current, [field]: value }))
@@ -46,7 +64,7 @@ export const useGameTypeForm = () => {
     }, [])
 
     const handleSubmit = useCallback(
-        async (event: FormEvent<HTMLFormElement>) => {
+        async (event: SubmitEventLike) => {
             event.preventDefault()
 
             const nextErrors = validate()
@@ -68,6 +86,9 @@ export const useGameTypeForm = () => {
                         name: form.name.trim(),
                         description: form.description.trim() || null,
                         template: form.template.trim(),
+                        durationInMins: Number(form.durationInMins),
+                        minimumPlayers: Number(form.minimumPlayers),
+                        format: form.format.trim() || null,
                     }),
                 })
 
@@ -85,7 +106,7 @@ export const useGameTypeForm = () => {
                 setSubmitting(false)
             }
         },
-        [form.description, form.name, form.template, validate],
+        [form.description, form.durationInMins, form.format, form.minimumPlayers, form.name, form.template, validate],
     )
 
     return {
