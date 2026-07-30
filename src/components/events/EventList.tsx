@@ -51,7 +51,7 @@ const EventList = ({ viewType }: EventListProps) => {
         setSigningUpId(eventId)
 
         try {
-            const response = await fetch(`/api/events/assign/${eventId}/${activePlayer.id}`)
+            const response = await fetch(`/api/events/assign/${eventId}/${activePlayer.id}`, { method: 'POST' })
             if (!response.ok) {
                 const data = await response.json().catch(() => null)
                 throw new Error(data?.error ?? `Request failed with status ${response.status}`)
