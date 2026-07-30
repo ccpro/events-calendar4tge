@@ -3,7 +3,7 @@ import { QRCode } from 'react-qr-code'
 import { SubmitButton } from '../common'
 
 type GeneratePlayerAccountWithQrCodeProps = {
-    onRegister?: (http_link: string) => void
+    onRegister?: (httpLink: string) => void
 }
 
 // i know that's is bad practice, but it's necessary for LAN/HTTP dev access
@@ -42,18 +42,18 @@ const GeneratePlayerAccountWithQrCode = ({ onRegister }: GeneratePlayerAccountWi
         return <p style={{ color: 'red' }}>{error}</p>
     }
 
-    const qr_registration_link = ip ? `http://${ip}:3000/api/register_player/${uuid}` : ''
+    const qrRegistrationLink = ip ? `http://${ip}:3000/api/register_player/${uuid}` : ''
 
     return (
         <div style={{ display: 'grid', gap: '0.75rem' }}>
-            {qr_registration_link ? (
+            {qrRegistrationLink ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     <span style={{ fontSize: '0.95rem', wordBreak: 'break-all' }}>
-                        {qr_registration_link}
+                        {qrRegistrationLink}
                     </span>
                     <SubmitButton
                         disabled={false}
-                        onClick={() => onRegister?.(qr_registration_link)}
+                        onClick={() => onRegister?.(qrRegistrationLink)}
                         cta_text_enabled="Register player"
                         cta_text_disabled="Register player"
                     />
@@ -62,7 +62,7 @@ const GeneratePlayerAccountWithQrCode = ({ onRegister }: GeneratePlayerAccountWi
                 <span style={{ opacity: 0.7 }}>Loading registration link...</span>
             )}
             <QRCode
-                value={qr_registration_link || 'https://example.com'}
+                value={qrRegistrationLink || 'https://example.com'}
                 size={256}
                 bgColor="#FFFFFF"
                 fgColor="#000000"
