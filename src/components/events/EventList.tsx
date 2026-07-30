@@ -5,6 +5,7 @@ import type { Event } from '@/app/common/types'
 import { formatDate, isDateNewerThanNow } from '@/app/common/dateUtils'
 import { Modal, SubmitButton } from '@/components/common'
 import { useSelectedRolesContext } from '@/context/SelectedRoles/SelectedRolesContext'
+import styles from '@/app/globals.module.css'
 import EventPlayerList from './players/EventPlayerList'
 
 type EventListProps = {
@@ -71,6 +72,22 @@ const EventList = ({ viewType }: EventListProps) => {
         setSelectedEvent(event)
     }
 
+    const getSignUpButtonState = (event: Event) => {
+        const isLate = !isDateNewerThanNow(event.startAt)
+        const isFull = event.playerCapacity <= (event.playersAssigned ?? 0)
+        const disabled = !activePlayer || signingUpId === event.id || isLate || isFull
+
+        const ctaTextDisabled = !activePlayer
+            ? 'Select player'
+            : signingUpId === event.id
+              ? 'Signing up...'
+              : isLate
+                ? 'Late'
+                : 'Full'
+
+        return { disabled, ctaTextDisabled }
+    }
+
     if (loading) {
         return <p style={{ marginTop: '1rem', opacity: 0.75 }}>Loading events...</p>
     }
@@ -84,75 +101,62 @@ const EventList = ({ viewType }: EventListProps) => {
     }
 
     return (
-        <div style={{ display: 'grid', gap: '0.75rem', marginTop: '1.25rem' }}>
+        <div className={styles.tableShell}>
             <h2>Events</h2>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <table className={styles.table}>
                 <thead>
-                    <tr style={{ textAlign: 'left', borderBottom: '1px solid #ddd' }}>
-                        <th style={{ padding: '0.5rem 0' }}>Name</th>
-                        <th style={{ padding: '0.5rem 0' }}>Organizer</th>
-                        <th style={{ padding: '0.5rem 0' }}>Template</th>
-                        <th style={{ padding: '0.5rem 0' }}>Created</th>
-                        <th style={{ padding: '0.5rem 0' }}>Start</th>
-                        <th style={{ padding: '0.5rem 0', textAlign: 'center' }}>
-                            Capacity/Players
-                        </th>
+                    <tr className={styles.tableHeadRow}>
+                        <th className={styles.tableHeaderCell}>Name</th>
+                        <th className={styles.tableHeaderCell}>Organizer</th>
+                        <th className={styles.tableHeaderCell}>Template</th>
+                        <th className={styles.tableHeaderCell}>Created</th>
+                        <th className={styles.tableHeaderCell}>Start</th>
+                        <th className={styles.tableHeaderCell}>Capacity/Players</th>
                         {viewType === 'player' && (
-                            <th style={{ padding: '0.5rem 0', textAlign: 'center' }}>Assigned</th>
+                            <th className={styles.tableHeaderCell}>Assigned</th>
                         )}
-                        {viewType !== 'list' && (
-                            <th style={{ padding: '0.5rem 0', textAlign: 'center' }}>Actions</th>
-                        )}
+                        {viewType !== 'list' && <th className={styles.tableHeaderCell}>Actions</th>}
                     </tr>
                 </thead>
                 <tbody>
                     {events.map((event) => (
-                        <tr key={event.id} style={{ borderBottom: '1px solid #eee' }}>
-                            <td style={{ padding: '0.5rem 0' }}>{event.name}</td>
-                            <td style={{ padding: '0.5rem 0' }}>{event.organizerName}</td>
-                            <td style={{ padding: '0.5rem 0', fontFamily: 'monospace' }}>
-                                {event.template}
-                            </td>
-                            <td style={{ padding: '0.5rem 0' }}>{formatDate(event.createdAt)}</td>
-                            <td style={{ padding: '0.5rem 0' }}>{formatDate(event.startAt)}</td>
-                            <td style={{ padding: '0.5rem 0', textAlign: 'center' }}>
+                        <tr key={event.id} className={styles.tableBodyRow}>
+                            <td className={styles.tableCell}>{event.name}</td>
+                            <td className={styles.tableCell}>{event.organizerName}</td>
+                            <td className={styles.tableCellMono}>{event.template}</td>
+                            <td className={styles.tableCell}>{formatDate(event.createdAt)}</td>
+                            <td className={styles.tableCell}>{formatDate(event.startAt)}</td>
+                            <td className={styles.tableCellCentered}>
                                 {event.playerCapacity}/{event.playersAssigned ?? 0}
                             </td>
                             {viewType === 'player' && (
                                 <>
-                                    <td style={{ padding: '0.5rem 0', textAlign: 'center' }}>
+                                    <td className={styles.tableCellCentered}>
                                         {event.isAssigned ? 'Yes' : 'No'}
                                     </td>
-                                    <td style={{ padding: '0.5rem 0' }}>
+                                    <td className={styles.tableCell}>
                                         {event.isAssigned ? (
                                             <span style={{ color: 'blue' }}>assigned</span>
                                         ) : (
-                                            <SubmitButton
-                                                disabled={
-                                                    !isDateNewerThanNow(event.startAt) ||
-                                                    !activePlayer ||
-                                                    signingUpId === event.id ||
-                                                    event.playerCapacity <=
-                                                        (event.playersAssigned ?? 0)
-                                                }
-                                                onClick={() => handleSignUp(event.id)}
-                                                cta_text_enabled="Sign Up"
-                                                cta_text_disabled={
-                                                    !activePlayer
-                                                        ? 'Select player'
-                                                        : signingUpId === event.id
-                                                          ? 'Signing up...'
-                                                          : !isDateNewerThanNow(event.startAt)
-                                                            ? 'Late'
-                                                            : 'Full'
-                                                }
-                                            />
+                                            (() => {
+                                                const { disabled, ctaTextDisabled } =
+                                                    getSignUpButtonState(event)
+
+                                                return (
+                                                    <SubmitButton
+                                                        disabled={disabled}
+                                                        onClick={() => handleSignUp(event.id)}
+                                                        cta_text_enabled="Sign Up"
+                                                        cta_text_disabled={ctaTextDisabled}
+                                                    />
+                                                )
+                                            })()
                                         )}
                                     </td>
                                 </>
                             )}
                             {viewType === 'organizer' && (
-                                <td style={{ padding: '0.5rem 0', textAlign: 'center' }}>
+                                <td className={styles.tableActionCell}>
                                     <SubmitButton
                                         disabled={false}
                                         onClick={() => viewEventPlayers(event)}

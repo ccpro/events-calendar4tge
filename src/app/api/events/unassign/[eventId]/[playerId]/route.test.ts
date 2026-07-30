@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import db from 'api_lib/db'
 import { DELETE } from './route'
 
-describe('DELETE /api/events/players/unnisign/[eventId]/[playerId]', () => {
+describe('DELETE /api/events/players/unassign/[eventId]/[playerId]', () => {
     const createdIds: { roleIds: number[]; eventId?: number } = { roleIds: [] }
 
     beforeEach(() => {
@@ -46,7 +46,7 @@ describe('DELETE /api/events/players/unnisign/[eventId]/[playerId]', () => {
             .run(eventId, playerRoleId)
 
         const response = await DELETE(
-            new Request('http://localhost/api/events/players/unnisign/123/456'),
+            new Request(`http://localhost/api/events/players/unassign/123/456`),
             { params: Promise.resolve({ eventId: String(eventId), playerId: String(playerRoleId) }) } as never,
         )
 

@@ -42,7 +42,7 @@ const PlayerView = () => {
                 </p>
             )}
 
-            <PlayerList onRefresh={loadPlayers} />
+            <PlayerList onRefresh={triggerPlayerListRefresh} />
             <EventList viewType="player" />
 
             <div style={{ marginTop: '1.5rem' }}>
