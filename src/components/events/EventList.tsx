@@ -98,7 +98,7 @@ const EventList = ({ viewType }: EventListProps) => {
                         {viewType === 'player' && (
                             <th style={{ padding: '0.5rem 0', textAlign: 'center' }}>Assigned</th>
                         )}
-                        <th style={{ padding: '0.5rem 0', textAlign: 'center' }}>[]</th>
+                        <th style={{ padding: '0.5rem 0', textAlign: 'center' }}>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
