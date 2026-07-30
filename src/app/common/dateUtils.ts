@@ -1,18 +1,33 @@
-const formatDate = (dateString: string): string => {
+const formatDate = (dateString: string | null | undefined): string => {
+    if (!dateString) {
+        return ''
+    }
+
     const dateUtc = new Date(dateString)
+
+    if (Number.isNaN(dateUtc.getTime())) {
+        return ''
+    }
+
     const formatted = new Intl.DateTimeFormat('en-US', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
         hour: '2-digit',
         minute: '2-digit',
-        hour12: false // Use true for AM/PM
+        hour12: false,
     }).format(dateUtc)
+
     return formatted
 }
 
 const isDateNewerThanNow = (dateString: string): boolean => {
     const targetDateUtc = new Date(dateString)
+
+    if (Number.isNaN(targetDateUtc.getTime())) {
+        return false
+    }
+
     return targetDateUtc.getTime() > Date.UTC(
         new Date().getUTCFullYear(),
         new Date().getUTCMonth(),
@@ -38,6 +53,11 @@ const isSameDay = (left: Date | null, right: Date | null): boolean => {
 
 const startsWithinNextHour = (dateString: string): boolean => {
     const targetDateUtc = new Date(dateString)
+
+    if (Number.isNaN(targetDateUtc.getTime())) {
+        return false
+    }
+
     const now = new Date()
     const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000)
 

@@ -20,16 +20,19 @@ const useCalendarSelectedEventsList = (onRefresh?: () => void) => {
         const startAt = new Date(event.startAt)
         const endAt = new Date(event.endAt)
 
+        const playersAssigned = event.playersAssigned ?? 0
+        const minimumPlayers = event.minimumPlayers ?? 0
+
         const getTooltip = (event: Event): string => {
-            return `assigned ${event.playersAssigned} minimum ${event.minimumPlayers}`
+            return `assigned ${playersAssigned} minimum ${minimumPlayers}`
         }
 
-        const assignedLessThanMinimum = event.playersAssigned < event.minimumPlayers
+        const assignedLessThanMinimum = playersAssigned < minimumPlayers
         const insufficientPlayersWarning = assignedLessThanMinimum ? 'Insufficient Players' : ''
         if (startsWithinNextHour(event.startAt)) {
             return {
                 color: assignedLessThanMinimum ? 'red' : 'blue',
-                title: `Upcoming in an hour. ${insufficientPlayersWarning} (${event.playersAssigned} assigned, min ${event.minimumPlayers})`,
+                title: `Upcoming in an hour. ${insufficientPlayersWarning} (${playersAssigned} assigned, min ${minimumPlayers})`,
                 tooltip: getTooltip(event),
                 state: assignedLessThanMinimum ? 'invalid' : 'valid',
             }
@@ -38,7 +41,7 @@ const useCalendarSelectedEventsList = (onRefresh?: () => void) => {
         if (now < startAt) {
             return {
                 color: assignedLessThanMinimum ? 'red' : 'blue',
-                title: `Upcoming. ${insufficientPlayersWarning} (${event.playersAssigned} assigned, min ${event.minimumPlayers})`,
+                title: `Upcoming. ${insufficientPlayersWarning} (${playersAssigned} assigned, min ${minimumPlayers})`,
                 tooltip: getTooltip(event),
                 state: assignedLessThanMinimum ? 'invalid' : 'valid',
             }

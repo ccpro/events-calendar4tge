@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
-import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest'
 import EventList from './EventList'
 import { SelectedRolesContext } from '../../context/SelectedRoles/SelectedRolesContext'
+import CalendarView from '../calendar/CalendarView'
 
 const mockContextValue = {
     activeOrganizer: null,
@@ -195,4 +195,5 @@ describe('EventList', () => {
         const agendaTable = await screen.findByRole('table', { name: /selected day events/i })
         expect(agendaTable).toBeInTheDocument()
         expect(within(agendaTable).getByText('Launch party')).toBeInTheDocument()
+    })
 })

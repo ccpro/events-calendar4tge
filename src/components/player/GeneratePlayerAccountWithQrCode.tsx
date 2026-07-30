@@ -18,6 +18,7 @@ const generateUuid = () => {
 const GeneratePlayerAccountWithQrCode = ({ onRegister }: GeneratePlayerAccountWithQrCodeProps) => {
     const [ip, setIp] = useState('')
     const [error, setError] = useState<string | undefined>(undefined)
+    const [isRegistering, setIsRegistering] = useState(false)
     const [uuid] = useState(() => (typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : generateUuid()))
 
     useEffect(() => {
@@ -40,6 +41,25 @@ const GeneratePlayerAccountWithQrCode = ({ onRegister }: GeneratePlayerAccountWi
 
     const qr_registration_link = ip ? `http://${ip}:3000/api/register_player/${uuid}` : ''
 
+    const handleRegister = async () => {
+        if (!uuid) {
+            return
+        }
+
+        setIsRegistering(true)
+
+        try {
+            const response = await fetch(`/api/register_player/${uuid}`)
+            if (response.ok) {
+                onRegister?.()
+            }
+        } catch {
+            // ignore registration errors and let the UI surface the link as fallback
+        } finally {
+            setIsRegistering(false)
+        }
+    }
+
     return (
         <div style={{ display: 'grid', gap: '0.75rem' }}>
             {qr_registration_link ? (
@@ -49,6 +69,21 @@ const GeneratePlayerAccountWithQrCode = ({ onRegister }: GeneratePlayerAccountWi
             ) : (
                 <span style={{ opacity: 0.7 }}>Loading registration link...</span>
             )}
+            <button
+                type="button"
+                onClick={handleRegister}
+                disabled={isRegistering}
+                style={{
+                    padding: '0.6rem 1rem',
+                    borderRadius: '8px',
+                    border: '1px solid #111',
+                    background: '#111',
+                    color: '#fff',
+                    cursor: 'pointer',
+                }}
+            >
+                {isRegistering ? 'Registering...' : 'Register player'}
+            </button>
             <QRCode
                 value={qr_registration_link || 'https://example.com'}
                 size={256}
