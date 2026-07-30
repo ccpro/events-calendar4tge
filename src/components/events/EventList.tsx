@@ -70,7 +70,7 @@ const EventList = ({ viewType }: EventListProps) => {
     }
 
     if (loading) {
-        return <p style={{ marginTop: '1rem', opacity: 0.75 }}>Loading games...</p>
+        return <p style={{ marginTop: '1rem', opacity: 0.75 }}>Loading events...</p>
     }
 
     if (error) {
