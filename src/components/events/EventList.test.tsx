@@ -185,17 +185,14 @@ describe('EventList', () => {
 
         render(
             <SelectedRolesContext.Provider value={mockContextValue}>
-                <EventList viewType="list" />
+                <CalendarView />
             </SelectedRolesContext.Provider>,
         )
 
         const dayButton = await screen.findByRole('button', { name: /select day 15/i })
         fireEvent.click(dayButton)
 
-        const agendaList = await screen.findByRole('list', { name: /selected day events/i })
-        expect(agendaList).toBeInTheDocument()
-        expect(
-            within(agendaList).getByText('Launch party', { selector: 'strong' }),
-        ).toBeInTheDocument()
-    })
+        const agendaTable = await screen.findByRole('table', { name: /selected day events/i })
+        expect(agendaTable).toBeInTheDocument()
+        expect(within(agendaTable).getByText('Launch party')).toBeInTheDocument()
 })
