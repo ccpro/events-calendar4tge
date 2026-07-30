@@ -25,8 +25,6 @@ const PlayerView = () => {
         <PageShell
             eyebrow="Role"
             title="Players"
-            background="#f5f5f5"
-            color="#111"
             links={[
                 { href: '/', label: 'Back home', color: '#111' },
                 { href: '/organizer', label: 'Switch to organizer view', color: '#111' },

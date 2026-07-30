@@ -27,7 +27,7 @@ const EventView = () => {
             >
                 Add new event
             </Link>
-            <EventList viewType="organizer" />
+            <EventList viewType="list" />
         </PageShell>
     )
 }

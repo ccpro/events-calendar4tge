@@ -8,7 +8,7 @@ import { useSelectedRolesContext } from '@/context/SelectedRoles/SelectedRolesCo
 import EventPlayerList from './players/EventPlayerList'
 
 type EventListProps = {
-    viewType: 'organizer' | 'player'
+    viewType: 'organizer' | 'player' | 'list'
 }
 
 const EventList = ({ viewType }: EventListProps) => {
@@ -51,7 +51,9 @@ const EventList = ({ viewType }: EventListProps) => {
         setSigningUpId(eventId)
 
         try {
-            const response = await fetch(`/api/events/assign/${eventId}/${activePlayer.id}`, { method: 'POST' })
+            const response = await fetch(`/api/events/assign/${eventId}/${activePlayer.id}`, {
+                method: 'POST',
+            })
             if (!response.ok) {
                 const data = await response.json().catch(() => null)
                 throw new Error(data?.error ?? `Request failed with status ${response.status}`)
@@ -98,7 +100,9 @@ const EventList = ({ viewType }: EventListProps) => {
                         {viewType === 'player' && (
                             <th style={{ padding: '0.5rem 0', textAlign: 'center' }}>Assigned</th>
                         )}
-                        <th style={{ padding: '0.5rem 0', textAlign: 'center' }}>Actions</th>
+                        {viewType !== 'list' && (
+                            <th style={{ padding: '0.5rem 0', textAlign: 'center' }}>Actions</th>
+                        )}
                     </tr>
                 </thead>
                 <tbody>

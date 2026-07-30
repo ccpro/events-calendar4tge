@@ -13,15 +13,14 @@ type PageShellProps = {
     color?: string
     maxWidth?: string
 }
-
 const PageShell = ({
     title,
     eyebrow,
     description,
     children,
     links = [],
-    background = '#111',
-    color = '#fff',
+    background = '#f5f5f5',
+    color = '#111',
     maxWidth = '70rem',
 }: PageShellProps) => {
     return (
