@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import db from '../../_lib/db'
+import db from 'api_lib/db'
 
 function createPlayer(uuid: string) {
     const existingPlayer = db

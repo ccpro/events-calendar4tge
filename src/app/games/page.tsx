@@ -1,5 +1,6 @@
-import GamesView from '@/components/games/GamesView'
+import GameView from '@/components/games/GameView'
 
-export default function GamesPage() {
-    return <GamesView />
+const GamesPage = () => {
+    return <GameView />
 }
+export default GamesPage

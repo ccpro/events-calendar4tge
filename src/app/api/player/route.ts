@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import db from '../_lib/db'
+import db from 'api_lib/db'
 import { PLAYER_ROLE_TYPE } from '@/app/common/constants'
 
 const GET = async () => {

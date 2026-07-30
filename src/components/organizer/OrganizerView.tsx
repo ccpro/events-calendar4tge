@@ -2,6 +2,7 @@
 
 import PageShell from '@/components/common/PageShell'
 import OrganizerList from './OrganizerList'
+import EventList from '../events/EventList'
 
 const OrganizerView = () => {
     return (
@@ -15,6 +16,7 @@ const OrganizerView = () => {
             ]}
         >
             <OrganizerList />
+            <EventList viewType="organizer" />
         </PageShell>
     )
 }

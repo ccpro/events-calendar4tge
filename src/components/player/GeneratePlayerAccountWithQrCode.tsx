@@ -6,10 +6,19 @@ type GeneratePlayerAccountWithQrCodeProps = {
     onRegister?: () => void
 }
 
+// crypto.randomUUID requires a secure context; fall back for LAN/HTTP dev access
+const generateUuid = () => {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
+        const random = (Math.random() * 16) | 0
+        const value = char === 'x' ? random : (random & 0x3) | 0x8
+        return value.toString(16)
+    })
+}
+
 const GeneratePlayerAccountWithQrCode = ({ onRegister }: GeneratePlayerAccountWithQrCodeProps) => {
     const [ip, setIp] = useState('')
     const [error, setError] = useState<string | undefined>(undefined)
-    const [uuid] = useState(() => crypto.randomUUID())
+    const [uuid] = useState(() => (typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : generateUuid()))
 
     useEffect(() => {
         const loadData = async () => {

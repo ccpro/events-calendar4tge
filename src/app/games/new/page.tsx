@@ -1,5 +1,7 @@
-import GamesAddNew from '@/components/games/GamesAddNew'
+import GameAddNew from '@/components/games/GameAddNew'
 
-export default function GamesAddNewPage() {
-    return <GamesAddNew />
+const GamesAddNewPage = () => {
+    return <GameAddNew />
 }
+
+export default GamesAddNewPage

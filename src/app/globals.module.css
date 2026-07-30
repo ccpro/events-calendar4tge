@@ -1,0 +1,42 @@
+.tableShell {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tableHeadRow {
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.tableHeaderCell {
+    padding: 0.5rem 0;
+}
+
+.tableBodyRow {
+    border-bottom: 1px solid #eee;
+}
+
+.tableCell {
+    padding: 0.5rem 0;
+}
+
+.tableCellCentered {
+    padding: 0.5rem 0;
+    text-align: center;
+}
+
+.tableCellMono {
+    padding: 0.5rem 0;
+    font-family: monospace;
+}
+
+.tableActionCell {
+    padding: 0.5rem 0;
+    text-align: center;
+}
