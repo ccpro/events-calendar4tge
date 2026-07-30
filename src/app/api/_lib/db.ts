@@ -33,11 +33,11 @@ db.exec(`CREATE TABLE IF NOT EXISTS game_type (
     minimumPlayers INTEGER NOT NULL DEFAULT 2,
     createdAt datetime NOT NULL default (datetime('now'))
 )`)
-db.exec(`INSERT INTO game_type (name, description, template,format,durationInMins,minPlayers)
-    SELECT 'Magic: The Gathering', 'Classic trading card game with standard and commander formats.', 'mtg-template', 'standard,commander', 60, 2
+db.exec(`INSERT INTO game_type (name, description, template, format, durationInMins, minimumPlayers)
+    SELECT 'Magic: The Gathering', 'Classic trading card game with standard and commander formats.', 'mtg-template', 'standard|commander', 60, 2
     WHERE NOT EXISTS (SELECT 1 FROM game_type WHERE template = 'mtg-template')
     UNION ALL
-    SELECT 'Pokémon TCG', 'Fast-paced card battles with standard and expanded play options.', 'pokemon-template', 'standard,expanded', 45, 2
+    SELECT 'Pokémon TCG', 'Fast-paced card battles with standard and expanded play options.', 'pokemon-template', 'standard|expanded', 45, 2
     WHERE NOT EXISTS (SELECT 1 FROM game_type WHERE template = 'pokemon-template')
     UNION ALL
     SELECT 'One Piece Card Game', 'Anime-inspired card battles with arena-style events.', 'one-piece-template', 'arena-style', 30, 2
@@ -52,7 +52,6 @@ db.exec(`CREATE TABLE IF NOT EXISTS game_event (
     startAt datetime NOT NULL default (datetime('now')),
     playerCapacity INTEGER NOT NULL CHECK (playerCapacity BETWEEN 1 AND 30),
     durationInMins INTEGER NOT NULL DEFAULT 60 CHECK (durationInMins >= 1)
-
 )`)
 
 // table alteration

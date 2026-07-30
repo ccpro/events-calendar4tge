@@ -32,12 +32,12 @@ const GameAddNew = () => {
                             padding: '0.75rem',
                             borderRadius: '10px',
                             border: '1px solid rgba(255,255,255,0.25)',
-                            background: '#1a1a1a',
-                            color: '#fff',
+                            background: 'black',
+                            color: 'white',
                         }}
                     />
                     {errors.name ? (
-                        <span style={{ color: '#ffb4b4', fontSize: '0.9rem' }}>{errors.name}</span>
+                        <span style={{ color: 'red', fontSize: '0.9rem' }}>{errors.name}</span>
                     ) : null}
                 </label>
 
@@ -52,8 +52,8 @@ const GameAddNew = () => {
                             padding: '0.75rem',
                             borderRadius: '10px',
                             border: '1px solid rgba(255,255,255,0.25)',
-                            background: '#1a1a1a',
-                            color: '#fff',
+                            background: 'black',
+                            color: 'white',
                             resize: 'vertical',
                         }}
                     />
@@ -69,14 +69,12 @@ const GameAddNew = () => {
                             padding: '0.75rem',
                             borderRadius: '10px',
                             border: '1px solid rgba(255,255,255,0.25)',
-                            background: '#1a1a1a',
-                            color: '#fff',
+                            background: 'black',
+                            color: 'white',
                         }}
                     />
                     {errors.template ? (
-                        <span style={{ color: '#ffb4b4', fontSize: '0.9rem' }}>
-                            {errors.template}
-                        </span>
+                        <span style={{ color: 'red', fontSize: '0.9rem' }}>{errors.template}</span>
                     ) : null}
                 </label>
 
@@ -91,12 +89,12 @@ const GameAddNew = () => {
                             padding: '0.75rem',
                             borderRadius: '10px',
                             border: '1px solid rgba(255,255,255,0.25)',
-                            background: '#1a1a1a',
-                            color: '#fff',
+                            background: 'black',
+                            color: 'white',
                         }}
                     />
                     {errors.durationInMins ? (
-                        <span style={{ color: '#ffb4b4', fontSize: '0.9rem' }}>
+                        <span style={{ color: 'red', fontSize: '0.9rem' }}>
                             {errors.durationInMins}
                         </span>
                     ) : null}
@@ -113,12 +111,12 @@ const GameAddNew = () => {
                             padding: '0.75rem',
                             borderRadius: '10px',
                             border: '1px solid rgba(255,255,255,0.25)',
-                            background: '#1a1a1a',
-                            color: '#fff',
+                            background: 'black',
+                            color: 'white',
                         }}
                     />
                     {errors.minimumPlayers ? (
-                        <span style={{ color: '#ffb4b4', fontSize: '0.9rem' }}>
+                        <span style={{ color: 'red', fontSize: '0.9rem' }}>
                             {errors.minimumPlayers}
                         </span>
                     ) : null}
@@ -136,8 +134,8 @@ const GameAddNew = () => {
                             padding: '0.75rem',
                             borderRadius: '10px',
                             border: '1px solid rgba(255,255,255,0.25)',
-                            background: '#1a1a1a',
-                            color: '#fff',
+                            background: 'black',
+                            color: 'white',
                         }}
                     />
                 </label>
@@ -146,7 +144,7 @@ const GameAddNew = () => {
                     <p
                         style={{
                             margin: 0,
-                            color: message.includes('successfully') ? '#b8f5c0' : '#ffb4b4',
+                            color: message.includes('successfully') ? 'green' : 'red',
                         }}
                     >
                         {message}

@@ -45,7 +45,7 @@ describe('useGameTypeForm', () => {
             } as unknown as React.FormEvent<HTMLFormElement>)
         })
 
-        expect(fetchMock).toHaveBeenCalledWith('/api/games/types', expect.objectContaining({
+        expect(fetchMock).toHaveBeenCalledWith('/api/games', expect.objectContaining({
             method: 'POST',
         }))
         expect(result.current.message).toBe('Game type created successfully.')

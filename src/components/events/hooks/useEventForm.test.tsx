@@ -1,6 +1,6 @@
-import { renderHook, waitFor } from '@testing-library/react'
-import { useEventForm } from './useEventForm'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { useEventForm } from './useEventForm'
 
 describe('useEventForm', () => {
     beforeEach(() => {
@@ -89,5 +89,87 @@ describe('useEventForm', () => {
         result.current.updateField('gameType', '7')
 
         expect(result.current.form.playerCapacity).toBe('4')
+    })
+
+    it('uses the selected game duration as the default event duration', async () => {
+        const fetchMock = vi.mocked(fetch)
+        fetchMock
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ organizers: [] }),
+            } as Response)
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({
+                    games: [
+                        {
+                            id: 7,
+                            name: 'Magic',
+                            description: null,
+                            template: 'mtg-template',
+                            createdAt: '2024-01-01T00:00:00.000Z',
+                            durationInMins: 90,
+                            minPlayers: 4,
+                            format: 'standard',
+                        },
+                    ],
+                }),
+            } as Response)
+
+        const { result } = renderHook(() => useEventForm())
+
+        await waitFor(() => {
+            expect(result.current.gameTypes).toHaveLength(1)
+        })
+
+        act(() => {
+            result.current.updateField('gameType', '7')
+        })
+
+        await waitFor(() => {
+            expect(result.current.form.durationInMins).toBe('90')
+        })
+    })
+
+    it('splits a selected game format string into selectable dropdown options', async () => {
+        const fetchMock = vi.mocked(fetch)
+        fetchMock
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ organizers: [] }),
+            } as Response)
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({
+                    games: [
+                        {
+                            id: 7,
+                            name: 'Magic',
+                            description: null,
+                            template: 'mtg-template',
+                            createdAt: '2024-01-01T00:00:00.000Z',
+                            durationInMins: 60,
+                            minPlayers: 2,
+                            format: 'Standard|Commander|Modern',
+                        },
+                    ],
+                }),
+            } as Response)
+
+        const { result } = renderHook(() => useEventForm())
+
+        await waitFor(() => {
+            expect(result.current.gameTypes).toHaveLength(1)
+        })
+
+        act(() => {
+            result.current.updateField('gameType', '7')
+        })
+
+        await waitFor(() => {
+            expect(result.current.form.format).toBe('Standard')
+        })
+
+        expect(result.current.getFormatOptions()).toEqual(['Standard', 'Commander', 'Modern'])
     })
 })

@@ -24,7 +24,7 @@ const CalendarSelectedEventsList = ({ events, onRefresh }: CalendarSelectedEvent
                     <tr>
                         <th>Game Name</th>
                         <th>Start Date</th>
-                        <th>End Date</th>
+                        <th>Duration</th>
                         <th>Status</th>
                         <th>Signup</th>
                     </tr>
@@ -32,11 +32,12 @@ const CalendarSelectedEventsList = ({ events, onRefresh }: CalendarSelectedEvent
                 <tbody>
                     {events.map((event) => {
                         const status = eventStatus(event)
+                        console.log(status)
                         return (
                             <tr key={event.id}>
                                 <td title={event.description ?? ''}>{event.name}</td>
                                 <td>{formatDate(event.startAt)}</td>
-                                <td>{formatDate(event.endAt)}</td>
+                                <td>{event.durationInMins} mins</td>
                                 <td title={status.tooltip} style={{ color: status.color }}>
                                     {status.title}
                                 </td>

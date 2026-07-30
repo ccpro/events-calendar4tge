@@ -23,9 +23,9 @@ const SubmitButton = ({
             style={{
                 padding: '0.35rem 0.75rem',
                 borderRadius: '8px',
-                border: '1px solid #111',
-                background: disabled ? '#111' : 'transparent',
-                color: disabled ? '#fff' : '#111',
+                border: '1px solid black',
+                background: disabled ? 'black' : 'transparent',
+                color: disabled ? 'white' : 'black',
                 cursor: disabled ? 'not-allowed' : 'pointer',
             }}
         >

@@ -43,7 +43,7 @@ const useCalendarSelectedEventsList = (onRefresh?: () => void) => {
                 color: assignedLessThanMinimum ? 'red' : 'blue',
                 title: `Upcoming. ${insufficientPlayersWarning} (${playersAssigned} assigned, min ${minimumPlayers})`,
                 tooltip: getTooltip(event),
-                state: assignedLessThanMinimum ? 'invalid' : 'valid',
+                state: 'valid',
             }
         }
 

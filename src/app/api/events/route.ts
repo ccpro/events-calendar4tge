@@ -8,7 +8,6 @@ export async function POST(request: Request) {
         const gameType = Number(body?.gameType)
         const startAt = typeof body?.startAt === 'string' ? body.startAt.trim() : ''
         const playerCapacity = Number(body?.playerCapacity)
-
         const durationInMins = Number(body?.durationInMins)
 
         if (!Number.isInteger(organizer) || organizer <= 0) {

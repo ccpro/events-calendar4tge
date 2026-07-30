@@ -19,8 +19,8 @@ const PageShell = ({
     description,
     children,
     links = [],
-    background = '#f5f5f5',
-    color = '#111',
+    background = 'beige',
+    color = 'black',
     maxWidth = '70rem',
 }: PageShellProps) => {
     return (

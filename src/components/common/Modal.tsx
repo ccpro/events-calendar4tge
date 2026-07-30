@@ -29,8 +29,8 @@ const Modal = ({ open, onClose, title, children }: ModalProps) => {
         >
             <div
                 style={{
-                    background: '#fff',
-                    color: '#111',
+                    background: 'white',
+                    color: 'black',
                     borderRadius: '16px',
                     padding: '1.5rem',
                     minWidth: '320px',
@@ -59,7 +59,7 @@ const Modal = ({ open, onClose, title, children }: ModalProps) => {
                             fontSize: '1.5rem',
                             lineHeight: 1,
                             cursor: 'pointer',
-                            color: '#111',
+                            color: 'black',
                         }}
                     >
                         &times;

@@ -40,7 +40,7 @@ const GameList = () => {
     }
 
     if (error) {
-        return <p style={{ marginTop: '1rem', opacity: 0.9, color: '#ffb4b4' }}>{error}</p>
+        return <p style={{ marginTop: '1rem', opacity: 0.9, color: 'red' }}>{error}</p>
     }
 
     if (games.length === 0) {
@@ -66,17 +66,6 @@ const GameList = () => {
                     </tr>
                 </thead>
                 <tbody>
-<<<<<<< HEAD
-                    {games.map((game) => (
-                        <tr key={game.id} className={styles.tableBodyRow}>
-                            <td className={styles.tableCell}>{game.name}</td>
-                            <td className={styles.tableCell}>{game.description}</td>
-                            <td className={styles.tableCellMono}>{game.template}</td>
-                            <td className={styles.tableCell}>{formatDate(game.createdAt)}</td>
-                            <td className={styles.tableCell}>{game.durationInMins}</td>
-                            <td className={styles.tableCell}>{game.minPlayers}</td>
-                            <td className={styles.tableCellMono}>{game.format}</td>
-=======
                     {games.map((template) => (
                         <tr key={template.id} className={styles.tableBodyRow}>
                             <td className={styles.tableCell}>{template.name}</td>
@@ -86,7 +75,6 @@ const GameList = () => {
                             <td className={styles.tableCell}>{template.minimumPlayers}</td>
                             <td className={styles.tableCell}>{template.format}</td>
                             <td className={styles.tableCell}>{formatDate(template.createdAt)}</td>
->>>>>>> dev/ccpro-add-event-calendar
                         </tr>
                     ))}
                 </tbody>

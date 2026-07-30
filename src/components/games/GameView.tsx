@@ -2,6 +2,7 @@
 
 import PageShell from '@/components/common/PageShell'
 import GameList from './GameList'
+import Link from 'next/link'
 
 const GameView = () => {
     return (
@@ -10,11 +11,13 @@ const GameView = () => {
             title="Available Games"
             description="Browse the available game templates that can drive event properties."
             links={[
+                { href: '/', label: 'home' },
                 { href: '/events', label: 'Back to events' },
-                { href: '/games/new', label: 'Add new game' },
-                { href: '/', label: 'Back home' },
             ]}
         >
+            <Link href="/games/new" style={{ textDecoration: 'underline' }}>
+                Add new game
+            </Link>
             <GameList />
         </PageShell>
     )

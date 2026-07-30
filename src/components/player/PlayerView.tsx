@@ -17,14 +17,8 @@ const PlayerView = () => {
     // PlayerList currently refreshes when the onRefresh callback identity changes.
     const triggerPlayerListRefresh = useCallback(() => undefined, [playerListRefreshKey])
 
-    const handleRegistered = useCallback(async (httpLink: string) => {
+    const handleRegistered = useCallback(async () => {
         try {
-            const response = await fetch(httpLink)
-
-            if (!response.ok) {
-                throw new Error('Failed to register player')
-            }
-
             setPlayerListRefreshKey((value) => value + 1)
             setIsRegisterOpen(false)
         } catch (error) {
@@ -37,8 +31,8 @@ const PlayerView = () => {
             eyebrow="Role"
             title="Players"
             links={[
-                { href: '/', label: 'home', color: '#111' },
-                { href: '/organizer', label: 'Switch to organizer view', color: '#111' },
+                { href: '/', label: 'home', color: 'black' },
+                { href: '/organizer', label: 'Switch to organizer view', color: 'black' },
                 { href: '/calendar', label: 'Calendar view' },
             ]}
         >
@@ -64,8 +58,8 @@ const PlayerView = () => {
                         padding: '0.65rem 1.1rem',
                         borderRadius: '10px',
                         border: 'none',
-                        background: '#111',
-                        color: '#fff',
+                        background: 'black',
+                        color: 'white',
                         fontWeight: 600,
                         cursor: 'pointer',
                     }}

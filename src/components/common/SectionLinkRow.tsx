@@ -10,7 +10,7 @@ type SectionLinkRowProps = {
     children?: ReactNode
 }
 
-const SectionLinkRow = ({ links, color = '#fff', className, children }: SectionLinkRowProps) => {
+const SectionLinkRow = ({ links, color = 'white', className, children }: SectionLinkRowProps) => {
     return (
         <div
             className={className}

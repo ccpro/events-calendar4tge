@@ -34,6 +34,7 @@ type Event = {
     createdAt: string
     startAt: string
     endAt: string
+    durationInMins: number
     playerCapacity: number
     playersAssigned: number
     minimumPlayers: number

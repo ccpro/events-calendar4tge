@@ -9,8 +9,8 @@ const inputStyle = {
     padding: '0.75rem',
     borderRadius: '10px',
     border: '1px solid rgba(255,255,255,0.25)',
-    background: '#1a1a1a',
-    color: '#fff',
+    background: 'black',
+    color: 'white',
 }
 
 const EventAddNew = () => {
@@ -99,10 +99,12 @@ const EventAddNew = () => {
                     </label>
 
                     <label style={{ display: 'grid', gap: '0.35rem' }}>
-                        <span style={{ fontWeight: 600 }}>Player capacity</span>
+                        <span
+                            style={{ fontWeight: 600 }}
+                        >{`Player capacity (minimal players ${form.minimumPlayers})`}</span>
                         <input
                             type="number"
-                            min={1}
+                            min={form.minimumPlayers}
                             max={30}
                             value={form.playerCapacity}
                             onChange={(event) => updateField('playerCapacity', event.target.value)}
@@ -166,8 +168,8 @@ const EventAddNew = () => {
                             padding: '0.8rem 1rem',
                             borderRadius: '10px',
                             border: 'none',
-                            background: submitting ? '#444' : '#fff',
-                            color: submitting ? '#ccc' : '#111',
+                            background: submitting ? '#444' : 'white',
+                            color: submitting ? '#ccc' : 'black',
                             fontWeight: 700,
                             cursor: submitting ? 'not-allowed' : 'pointer',
                             width: 'fit-content',
@@ -179,7 +181,7 @@ const EventAddNew = () => {
             )}
 
             <SectionLinkRow
-                color="#111"
+                color="black"
                 links={[
                     { href: '/', label: 'home' },
                     { href: '/events', label: 'Back to events' },

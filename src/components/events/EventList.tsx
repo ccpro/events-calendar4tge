@@ -93,7 +93,7 @@ const EventList = ({ viewType }: EventListProps) => {
     }
 
     if (error) {
-        return <p style={{ marginTop: '1rem', opacity: 0.9, color: '#ffb4b4' }}>{error}</p>
+        return <p style={{ marginTop: '1rem', opacity: 0.9, color: 'red' }}>{error}</p>
     }
 
     return (
