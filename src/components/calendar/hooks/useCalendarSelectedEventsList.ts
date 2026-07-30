@@ -1,13 +1,15 @@
 import { useCallback } from 'react'
-import type { Event } from '@/app/common/types'
+import type { Event } from '@/common/types'
 import { useSelectedRolesContext } from '@/context/SelectedRoles/SelectedRolesContext'
 import { startsWithinNextHour } from '@/app/common/dateUtils'
+
+type EventState = 'valid' | 'invalid' | 'past'
 
 type EventStatus = {
     color: string
     title: string
     tooltip: string
-    valid: boolean
+    state: EventState
 }
 
 const useCalendarSelectedEventsList = (onRefresh?: () => void) => {
@@ -29,7 +31,7 @@ const useCalendarSelectedEventsList = (onRefresh?: () => void) => {
                 color: assignedLessThanMinimum ? 'red' : 'blue',
                 title: `Upcoming in an hour. ${insufficientPlayersWarning} (${event.playersAssigned} assigned, min ${event.minimumPlayers})`,
                 tooltip: getTooltip(event),
-                valid: true,
+                state: assignedLessThanMinimum ? 'invalid' : 'valid',
             }
         }
 
@@ -38,7 +40,7 @@ const useCalendarSelectedEventsList = (onRefresh?: () => void) => {
                 color: assignedLessThanMinimum ? 'red' : 'blue',
                 title: `Upcoming. ${insufficientPlayersWarning} (${event.playersAssigned} assigned, min ${event.minimumPlayers})`,
                 tooltip: getTooltip(event),
-                valid: true,
+                state: assignedLessThanMinimum ? 'invalid' : 'valid',
             }
         }
 
@@ -47,7 +49,7 @@ const useCalendarSelectedEventsList = (onRefresh?: () => void) => {
                 color: assignedLessThanMinimum ? 'red' : 'green',
                 title: assignedLessThanMinimum ? `Insufficient Players. Haven't met the minimum requirement.` : 'Ongoing',
                 tooltip: getTooltip(event),
-                valid: true,
+                state: assignedLessThanMinimum ? 'invalid' : 'valid',
             }
         }
 
@@ -55,7 +57,7 @@ const useCalendarSelectedEventsList = (onRefresh?: () => void) => {
             color: 'gray',
             title: assignedLessThanMinimum ? 'Insufficient Players. Wasn\'t able to meet the minimum requirement.' : 'Past',
             tooltip: getTooltip(event),
-            valid: false,
+            state: 'past',
         }
     }
 

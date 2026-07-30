@@ -1,11 +1,10 @@
 'use client'
 
 import { formatDate } from '@/app/common/dateUtils'
-import type { Event } from '@/app/common/types'
+import type { Event } from '@/common/types'
 import styles from '@/app/globals.module.css'
 import { SubmitButton } from '../common'
 import useCalendarSelectedEventsList from './hooks/useCalendarSelectedEventsList'
-import { useSelectedRolesContext } from '@/context/SelectedRoles/SelectedRolesContext'
 
 type CalendarSelectedEventsListProps = {
     events: Event[]
@@ -14,7 +13,7 @@ type CalendarSelectedEventsListProps = {
 
 const CalendarSelectedEventsList = ({ events, onRefresh }: CalendarSelectedEventsListProps) => {
     const { eventStatus, signupForEvent } = useCalendarSelectedEventsList(onRefresh)
-    const { activePlayer } = useSelectedRolesContext()
+
     if (events.length === 0) {
         return <p className={styles.calendarEmptyState}>No events scheduled for this day.</p>
     }
@@ -43,9 +42,11 @@ const CalendarSelectedEventsList = ({ events, onRefresh }: CalendarSelectedEvent
                                 </td>
                                 <td>
                                     <SubmitButton
-                                        disabled={!status.valid || event.isAssigned}
+                                        disabled={status.state !== 'valid' || event.isAssigned}
                                         cta_text_enabled="Book"
-                                        cta_text_disabled="Booked"
+                                        cta_text_disabled={
+                                            status.state === 'past' ? 'Past' : 'Booked'
+                                        }
                                         onClick={() => signupForEvent(event.id)}
                                     />
                                 </td>

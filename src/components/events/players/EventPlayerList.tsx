@@ -2,7 +2,7 @@
 
 import { SubmitButton } from '@/components/common'
 import { useEffect, useState } from 'react'
-import type { Event } from '@/app/common/types'
+import type { Event } from '@/common/types'
 
 type EventPlayer = {
     id: number

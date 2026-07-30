@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import type { Event } from '@/app/common/types'
+import type { Event } from '@/common/types'
 import { isSameDay } from '@/app/common/dateUtils'
 import { useSelectedRolesContext } from '@/context/SelectedRoles/SelectedRolesContext'
 

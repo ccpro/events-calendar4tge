@@ -1,5 +1,5 @@
 const formatDate = (dateString: string): string => {
-    const date = new Date(dateString)
+    const dateUtc = new Date(dateString)
     const formatted = new Intl.DateTimeFormat('en-US', {
         year: 'numeric',
         month: '2-digit',
@@ -7,13 +7,13 @@ const formatDate = (dateString: string): string => {
         hour: '2-digit',
         minute: '2-digit',
         hour12: false // Use true for AM/PM
-    }).format(date)
+    }).format(dateUtc)
     return formatted
 }
 
 const isDateNewerThanNow = (dateString: string): boolean => {
-    const targetDate = new Date(dateString)
-    return targetDate.getTime() > Date.UTC(
+    const targetDateUtc = new Date(dateString)
+    return targetDateUtc.getTime() > Date.UTC(
         new Date().getUTCFullYear(),
         new Date().getUTCMonth(),
         new Date().getUTCDate(),
@@ -37,11 +37,11 @@ const isSameDay = (left: Date | null, right: Date | null): boolean => {
 }
 
 const startsWithinNextHour = (dateString: string): boolean => {
-    const targetDate = new Date(dateString)
+    const targetDateUtc = new Date(dateString)
     const now = new Date()
     const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000)
 
-    return targetDate.getTime() >= now.getTime() && targetDate.getTime() <= oneHourFromNow.getTime()
+    return targetDateUtc.getTime() >= now.getTime() && targetDateUtc.getTime() <= oneHourFromNow.getTime()
 }
 
 export { formatDate, isDateNewerThanNow, isSameDay, startsWithinNextHour }

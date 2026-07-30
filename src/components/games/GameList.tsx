@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { Game } from '@/app/common/types'
+import type { Game } from '@/common/types'
 import styles from '@/app/globals.module.css'
 import { formatDate } from '@/app/common/dateUtils'
 

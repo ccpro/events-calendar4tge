@@ -1,6 +1,6 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react'
 import { Organizer } from '@/common/types'
-import { Game } from '@/app/common/types'
+import { Game } from '@/common/types'
 
 export type EventFormState = {
     organizer: string
@@ -105,8 +105,8 @@ export const useEventForm = (initialOrganizerId?: number) => {
                 const selectedGame = gameTypes.find((gameType) => String(gameType.id) === value)
 
                 if (selectedGame) {
-                    if (selectedGame.minPlayers !== undefined && (!current.playerCapacity || current.playerCapacity === String(initialFormState.playerCapacity))) {
-                        nextState.playerCapacity = String(selectedGame.minPlayers)
+                    if (selectedGame.minimumPlayers !== undefined && (!current.playerCapacity || current.playerCapacity === String(initialFormState.playerCapacity))) {
+                        nextState.playerCapacity = String(selectedGame.minimumPlayers)
                     }
 
                     if (selectedGame.durationInMins !== undefined) {
@@ -136,8 +136,8 @@ export const useEventForm = (initialOrganizerId?: number) => {
             setForm((current) => {
                 const nextState = { ...current }
 
-                if (selectedGame.minPlayers !== undefined && (!current.playerCapacity || current.playerCapacity === String(initialFormState.playerCapacity))) {
-                    nextState.playerCapacity = String(selectedGame.minPlayers)
+                if (selectedGame.minimumPlayers !== undefined && (!current.playerCapacity || current.playerCapacity === String(initialFormState.playerCapacity))) {
+                    nextState.playerCapacity = String(selectedGame.minimumPlayers)
                 }
 
                 if (selectedGame.durationInMins !== undefined && current.durationInMins === initialFormState.durationInMins) {
