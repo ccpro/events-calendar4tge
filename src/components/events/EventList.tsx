@@ -33,7 +33,7 @@ const EventList = ({ viewType }: EventListProps) => {
             setEvents(data.events ?? [])
         } catch (err) {
             setEvents([])
-            setError(err instanceof Error ? err.message : 'Unable to load games')
+            setError(err instanceof Error ? err.message : 'Unable to load events')
         } finally {
             setLoading(false)
         }
