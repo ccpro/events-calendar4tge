@@ -4,6 +4,7 @@ import PageShell from '@/components/common/PageShell'
 import { useSelectedRolesContext } from '@/context/SelectedRoles/SelectedRolesContext'
 import CalendarView from './CalendarView'
 import Link from 'next/link'
+import CalendarIcsDownloadLink from './CalendarIcsDownloadLink'
 
 const CalendarPageView = () => {
     const { activePlayer } = useSelectedRolesContext()
@@ -29,6 +30,7 @@ const CalendarPageView = () => {
                     <Link href="/player">Please select a player.</Link>
                 </p>
             )}
+            <CalendarIcsDownloadLink />
             <CalendarView />
         </PageShell>
     )
