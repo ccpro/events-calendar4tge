@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { QRCode } from 'react-qr-code'
-import { randomUUID } from 'crypto'
 import { SubmitButton } from '../common'
 
 type GeneratePlayerAccountWithQrCodeProps = {
