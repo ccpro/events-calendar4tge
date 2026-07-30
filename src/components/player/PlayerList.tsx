@@ -1,13 +1,17 @@
 'use client'
 
+import { formatDate } from '@/app/common/dateUtils'
 import { Player } from '@/common/types'
+import { useSelectedRolesContext } from '@/context/SelectedRoles/SelectedRolesContext'
 import { useEffect, useState } from 'react'
+import { SubmitButton } from '../common'
 
 type PlayerListProps = {
     onRefresh?: () => void
 }
 
 const PlayerList = ({ onRefresh }: PlayerListProps) => {
+    const { activePlayer, setActivePlayer } = useSelectedRolesContext()
     const [players, setPlayers] = useState<Player[]>([])
     const [refreshKey, setRefreshKey] = useState(0)
 
@@ -33,6 +37,7 @@ const PlayerList = ({ onRefresh }: PlayerListProps) => {
 
     return (
         <div style={{ marginTop: '1rem', marginBottom: '1.5rem' }}>
+            <h2>Players</h2>
             {players.length > 0 ? (
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
@@ -40,6 +45,7 @@ const PlayerList = ({ onRefresh }: PlayerListProps) => {
                             <th style={{ padding: '0.5rem 0' }}>Name</th>
                             <th style={{ padding: '0.5rem 0' }}>UUID</th>
                             <th style={{ padding: '0.5rem 0' }}>Created</th>
+                            <th style={{ padding: '0.5rem 0', textAlign: 'center' }}>[]</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -50,7 +56,15 @@ const PlayerList = ({ onRefresh }: PlayerListProps) => {
                                     {player.uuid}
                                 </td>
                                 <td style={{ padding: '0.5rem 0' }}>
-                                    {new Date(player.createdAt).toLocaleString()}
+                                    {formatDate(player.createdAt)}
+                                </td>
+                                <td style={{ padding: '0.5rem 0' }}>
+                                    <SubmitButton
+                                        disabled={activePlayer?.id === player.id}
+                                        onClick={() => setActivePlayer(player)}
+                                        cta_text_enabled="Select"
+                                        cta_text_disabled="Selected"
+                                    />
                                 </td>
                             </tr>
                         ))}

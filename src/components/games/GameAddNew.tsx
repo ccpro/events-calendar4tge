@@ -3,7 +3,7 @@
 import { SectionLinkRow } from '@/components/common'
 import { useGameTypeForm } from './hooks/useGameTypeForm'
 
-const GamesAddNewType = () => {
+const GameAddNew = () => {
     const { form, errors, submitting, message, updateField, handleSubmit } = useGameTypeForm()
 
     return (
@@ -133,4 +133,4 @@ const GamesAddNewType = () => {
     )
 }
 
-export default GamesAddNewType
+export default GameAddNew

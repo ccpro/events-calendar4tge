@@ -22,7 +22,7 @@ const PageShell = ({
     links = [],
     background = '#111',
     color = '#fff',
-    maxWidth = '720px',
+    maxWidth = '70rem',
 }: PageShellProps) => {
     return (
         <main style={{ minHeight: '100vh', padding: '3rem', fontFamily: 'var(--font-geist-sans)' }}>

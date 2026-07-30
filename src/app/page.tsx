@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import styles from './page.module.css'
+import { SectionLinkRow } from '@/components/common'
 
 const Home = () => {
     return (
@@ -8,17 +8,19 @@ const Home = () => {
                 <h1>Event Calendar for Tabletop Game Events</h1>
                 <div className={styles.intro}>
                     <h2>To get started, choose a role:</h2>
-                    <div className={styles.ctas}>
-                        <Link className={styles.primary} href="/organizer">
-                            store organizer
-                        </Link>
-                        <Link className={styles.secondary} href="/player">
-                            player
-                        </Link>
-                        <Link className={styles.secondary} href="/games">
-                            games
-                        </Link>
-                    </div>
+                    <SectionLinkRow
+                        className={styles.ctas}
+                        links={[
+                            {
+                                href: '/organizer',
+                                label: 'store organizer',
+                                className: styles.primary,
+                            },
+                            { href: '/player', label: 'player', className: styles.secondary },
+                            { href: '/events', label: 'events', className: styles.secondary },
+                            { href: '/games', label: 'games', className: styles.secondary },
+                        ]}
+                    />
                 </div>
             </main>
         </div>

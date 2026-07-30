@@ -1,11 +1,11 @@
 'use client'
 
-import { GameType } from '@/app/common/types'
+import { Game } from '@/app/common/types'
 import PageShell from '@/components/common/PageShell'
 import { useEffect, useState } from 'react'
 
-const GameTypeView = () => {
-    const [games, setGames] = useState<GameType[]>([])
+const GameView = () => {
+    const [games, setGames] = useState<Game[]>([])
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
 
@@ -15,7 +15,7 @@ const GameTypeView = () => {
             setError(null)
 
             try {
-                const response = await fetch('/api/games/types')
+                const response = await fetch('/api/games')
 
                 if (!response.ok) {
                     throw new Error(`Request failed with status ${response.status}`)
@@ -40,8 +40,8 @@ const GameTypeView = () => {
             title="Available Games"
             description="Browse the available game templates that can drive event properties."
             links={[
-                { href: '/games', label: 'Back to games list' },
-                { href: '/games/type/new', label: 'Add new game type' },
+                { href: '/events', label: 'Back to events list' },
+                { href: '/games/new', label: 'Add new game' },
                 { href: '/', label: 'Back home' },
             ]}
         >
@@ -92,4 +92,4 @@ const GameTypeView = () => {
     )
 }
 
-export default GameTypeView
+export default GameView

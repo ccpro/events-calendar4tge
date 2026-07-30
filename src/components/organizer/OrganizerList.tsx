@@ -1,11 +1,11 @@
 'use client'
 
 import { Organizer } from '@/common/types'
-import { useOrganizerContext } from '@/context/Organizer/OrganizerContext'
+import { useSelectedRolesContext } from '@/context/SelectedRoles/SelectedRolesContext'
 import { useEffect, useState } from 'react'
 
 const OrganizerList = () => {
-    const { activeOrganizer, setActiveOrganizer } = useOrganizerContext()
+    const { activeOrganizer, setActiveOrganizer } = useSelectedRolesContext()
     const [organizers, setOrganizers] = useState<Organizer[]>([])
     const [error, setError] = useState<string | null>(null)
 
@@ -39,7 +39,7 @@ const OrganizerList = () => {
             <div style={{ marginTop: '1.5rem' }}>
                 <h2 style={{ fontSize: '1.2rem', marginBottom: '0.75rem' }}>Organizers</h2>
                 {error ? (
-                    <p style={{ opacity: 0.9, color: '#ffb4b4' }}>{error}</p>
+                    <p style={{ opacity: 0.9, color: '#312222' }}>{error}</p>
                 ) : organizers.length > 0 ? (
                     <div style={{ display: 'grid', gap: '0.75rem' }}>
                         {organizers.map((organizer) => {
@@ -55,12 +55,12 @@ const OrganizerList = () => {
                                         padding: '0.85rem 1rem',
                                         borderRadius: '12px',
                                         border: isActive
-                                            ? '2px solid #fff'
-                                            : '1px solid rgba(255,255,255,0.2)',
+                                            ? '2px solid #290909'
+                                            : '1px solid rgba(0,0,0,0.2)',
                                         background: isActive
                                             ? 'rgba(255,255,255,0.15)'
                                             : 'rgba(255,255,255,0.08)',
-                                        color: '#fff',
+                                        color: '#160505',
                                         cursor: 'pointer',
                                     }}
                                 >

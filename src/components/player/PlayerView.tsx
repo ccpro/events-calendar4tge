@@ -1,17 +1,25 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import PageShell from '@/components/common/PageShell'
-import { useOrganizerContext } from '@/context/Organizer/OrganizerContext'
+import { Modal } from '@/components/common'
+import { useSelectedRolesContext } from '@/context/SelectedRoles/SelectedRolesContext'
 import GeneratePlayerAccountWithQrCode from './GeneratePlayerAccountWithQrCode'
 import PlayerList from './PlayerList'
+import EventList from '../events/EventList'
 
 const PlayerView = () => {
-    const { activeOrganizer } = useOrganizerContext()
+    const { activeOrganizer, activePlayer } = useSelectedRolesContext()
+    const [isRegisterOpen, setIsRegisterOpen] = useState(false)
 
     const loadPlayers = useCallback(() => {
         return undefined
     }, [])
+
+    const handleRegistered = useCallback(() => {
+        loadPlayers()
+        setIsRegisterOpen(false)
+    }, [loadPlayers])
 
     return (
         <PageShell
@@ -26,16 +34,43 @@ const PlayerView = () => {
         >
             {activeOrganizer && (
                 <p style={{ marginBottom: '1rem', opacity: 0.8 }}>
-                    Active organizer: {activeOrganizer.name}
+                    <b>Active organizer:</b> <i>{activeOrganizer.name}</i>
+                </p>
+            )}
+            {activePlayer && (
+                <p style={{ marginBottom: '1rem', opacity: 0.8 }}>
+                    <b>Active player:</b> <i>{activePlayer.name}</i>
                 </p>
             )}
 
             <PlayerList onRefresh={loadPlayers} />
+            <EventList viewType="player" />
 
             <div style={{ marginTop: '1.5rem' }}>
-                <p style={{ fontWeight: 600 }}>register new player</p>
-                <GeneratePlayerAccountWithQrCode onRegister={loadPlayers} />
+                <button
+                    type="button"
+                    onClick={() => setIsRegisterOpen(true)}
+                    style={{
+                        padding: '0.65rem 1.1rem',
+                        borderRadius: '10px',
+                        border: 'none',
+                        background: '#111',
+                        color: '#fff',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                    }}
+                >
+                    Register new player
+                </button>
             </div>
+
+            <Modal
+                open={isRegisterOpen}
+                onClose={() => setIsRegisterOpen(false)}
+                title="Register new player"
+            >
+                <GeneratePlayerAccountWithQrCode onRegister={handleRegistered} />
+            </Modal>
         </PageShell>
     )
 }

@@ -21,12 +21,18 @@ type Game = {
     isAssigned: number | boolean
 }
 
-type GameType = {
+type Event = {
     id: number
     name: string
+    organizerId: number
+    organizerName: string
     description: string | null
     template: string
     createdAt: string
+    startAt: string
+    playerCapacity: number
+    playersAssigned: number
+    isAssigned: number | boolean
 }
 
-export type { Organizer, Player, Game, GameType }
+export type { Organizer, Player, Game, Event }

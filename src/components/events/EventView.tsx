@@ -2,22 +2,22 @@
 
 import Link from 'next/link'
 import PageShell from '@/components/common/PageShell'
-import GameList from './GameList'
+import EventList from './EventList'
 
-const GamesView = () => {
+const EventView = () => {
     return (
         <PageShell
-            eyebrow="Games"
-            title="Available Games"
-            description="Browse the full game catalog from this dedicated view."
+            eyebrow="Events"
+            title="Available Events"
+            description="Browse the full event catalog from this dedicated view."
             links={[
                 { href: '/', label: 'Back home' },
-                { href: '/games/type', label: 'Available Games' },
+                { href: '/games', label: 'Available games' },
                 { href: '/organizer', label: 'Go to organizer view' },
             ]}
         >
             <Link
-                href="/games/new"
+                href="/events/new"
                 style={{
                     display: 'inline-block',
                     marginBottom: '1rem',
@@ -25,11 +25,11 @@ const GamesView = () => {
                     textDecoration: 'underline',
                 }}
             >
-                Add new game
+                Add new event
             </Link>
-            <GameList />
+            <EventList viewType="organizer" />
         </PageShell>
     )
 }
 
-export default GamesView
+export default EventView
