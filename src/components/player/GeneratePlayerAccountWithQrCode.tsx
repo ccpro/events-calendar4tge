@@ -47,7 +47,9 @@ const GeneratePlayerAccountWithQrCode = ({ onRegister }: GeneratePlayerAccountWi
         <div style={{ display: 'grid', gap: '0.75rem' }}>
             {qr_registration_link ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <span style={{ fontSize: '0.95rem', wordBreak: 'break-all' }}>{qr_registration_link}</span>
+                    <span style={{ fontSize: '0.95rem', wordBreak: 'break-all' }}>
+                        {qr_registration_link}
+                    </span>
                     <SubmitButton
                         disabled={false}
                         onClick={() => onRegister?.(qr_registration_link)}
