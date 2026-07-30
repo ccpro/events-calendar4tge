@@ -23,7 +23,7 @@ const GameList = () => {
                 }
 
                 const data = await response.json()
-                setGames(data.gameTypes ?? [])
+                setGames(data.games ?? [])
             } catch (err) {
                 setGames([])
                 setError(err instanceof Error ? err.message : 'Unable to load game types')
@@ -36,7 +36,7 @@ const GameList = () => {
     }, [])
 
     if (loading) {
-        return <p style={{ marginTop: '1rem', opacity: 0.75 }}>Loading game types...</p>
+        return <p style={{ marginTop: '1rem', opacity: 0.75 }}>Loading games...</p>
     }
 
     if (error) {
@@ -44,7 +44,7 @@ const GameList = () => {
     }
 
     if (games.length === 0) {
-        return <p style={{ marginTop: '1rem', opacity: 0.75 }}>No game types found.</p>
+        return <p style={{ marginTop: '1rem', opacity: 0.75 }}>No games found.</p>
     }
 
     return (
@@ -57,15 +57,21 @@ const GameList = () => {
                         <th className={styles.tableHeaderCell}>Description</th>
                         <th className={styles.tableHeaderCell}>Template</th>
                         <th className={styles.tableHeaderCell}>Created (utc)</th>
+                        <th className={styles.tableHeaderCell}>Duration (mins)</th>
+                        <th className={styles.tableHeaderCell}>Min Players</th>
+                        <th className={styles.tableHeaderCell}>Format</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {games.map((template) => (
-                        <tr key={template.id} className={styles.tableBodyRow}>
-                            <td className={styles.tableCell}>{template.name}</td>
-                            <td className={styles.tableCell}>{template.description}</td>
-                            <td className={styles.tableCellMono}>{template.template}</td>
-                            <td className={styles.tableCell}>{formatDate(template.createdAt)}</td>
+                    {games.map((game) => (
+                        <tr key={game.id} className={styles.tableBodyRow}>
+                            <td className={styles.tableCell}>{game.name}</td>
+                            <td className={styles.tableCell}>{game.description}</td>
+                            <td className={styles.tableCellMono}>{game.template}</td>
+                            <td className={styles.tableCell}>{formatDate(game.createdAt)}</td>
+                            <td className={styles.tableCell}>{game.durationInMins}</td>
+                            <td className={styles.tableCell}>{game.minPlayers}</td>
+                            <td className={styles.tableCellMono}>{game.format}</td>
                         </tr>
                     ))}
                 </tbody>

@@ -10,7 +10,7 @@ const GameView = () => {
             title="Available Games"
             description="Browse the available game templates that can drive event properties."
             links={[
-                { href: '/events', label: 'Back to events list' },
+                { href: '/events', label: 'Back to events' },
                 { href: '/games/new', label: 'Add new game' },
                 { href: '/', label: 'Back home' },
             ]}

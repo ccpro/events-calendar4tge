@@ -28,16 +28,19 @@ db.exec(`CREATE TABLE IF NOT EXISTS game_type (
     name varchar(256) NOT NULL,
     description TEXT,
     template varchar(256) NOT NULL,
+    format varchar(256) NOT NULL,
+    durationInMins INTEGER NOT NULL CHECK (durationInMins BETWEEN 1 AND 1440),
+    minPlayers INTEGER NOT NULL CHECK (minPlayers BETWEEN 1 AND 30),
     createdAt datetime NOT NULL default (datetime('now'))
 )`)
-db.exec(`INSERT INTO game_type (name, description, template)
-    SELECT 'Magic: The Gathering', 'Classic trading card game with standard and commander formats.', 'mtg-template'
+db.exec(`INSERT INTO game_type (name, description, template,format,durationInMins,minPlayers)
+    SELECT 'Magic: The Gathering', 'Classic trading card game with standard and commander formats.', 'mtg-template', 'standard,commander', 60, 2
     WHERE NOT EXISTS (SELECT 1 FROM game_type WHERE template = 'mtg-template')
     UNION ALL
-    SELECT 'Pokémon TCG', 'Fast-paced card battles with standard and expanded play options.', 'pokemon-template'
+    SELECT 'Pokémon TCG', 'Fast-paced card battles with standard and expanded play options.', 'pokemon-template', 'standard,expanded', 45, 2
     WHERE NOT EXISTS (SELECT 1 FROM game_type WHERE template = 'pokemon-template')
     UNION ALL
-    SELECT 'One Piece Card Game', 'Anime-inspired card battles with arena-style events.', 'one-piece-template'
+    SELECT 'One Piece Card Game', 'Anime-inspired card battles with arena-style events.', 'one-piece-template', 'arena-style', 30, 2
     WHERE NOT EXISTS (SELECT 1 FROM game_type WHERE template = 'one-piece-template')
 `)
 
@@ -47,6 +50,7 @@ db.exec(`CREATE TABLE IF NOT EXISTS game_event (
     gameType INTEGER NOT NULL REFERENCES game_type(id),
     createdAt datetime NOT NULL default (datetime('now')),
     startAt datetime NOT NULL default (datetime('now')),
+    duration INTEGER NOT NULL CHECK (duration BETWEEN 1 AND 1440),
     playerCapacity INTEGER NOT NULL CHECK (playerCapacity BETWEEN 1 AND 30)
 )`)
 

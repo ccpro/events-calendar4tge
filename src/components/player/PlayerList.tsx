@@ -47,7 +47,7 @@ const PlayerList = ({ onRefresh }: PlayerListProps) => {
                             <th className={styles.tableHeaderCell}>UUID</th>
                             <th className={styles.tableHeaderCell}>Created (utc)</th>
                             <th className={styles.tableHeaderCell} style={{ textAlign: 'center' }}>
-                                []
+                                Actions
                             </th>
                         </tr>
                     </thead>
