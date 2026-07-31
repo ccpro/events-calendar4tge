@@ -210,4 +210,91 @@ describe('useEventForm', () => {
 
         expect(result.current.form.playerCapacity).toBe('4')
     })
+
+    it('refreshes template-driven values when the selected game changes', async () => {
+        const fetchMock = vi.mocked(fetch)
+        fetchMock
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ organizers: [] }),
+            } as Response)
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({
+                    games: [
+                        {
+                            id: 1,
+                            name: 'First Game',
+                            description: null,
+                            template: 'template-a',
+                            createdAt: '2024-01-01T00:00:00.000Z',
+                            durationInMins: 60,
+                            format: 'Standard',
+                        },
+                        {
+                            id: 2,
+                            name: 'Second Game',
+                            description: null,
+                            template: 'template-b',
+                            createdAt: '2024-01-01T00:00:00.000Z',
+                            durationInMins: 90,
+                            format: 'Modern',
+                        },
+                    ],
+                }),
+            } as Response)
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({
+                    templates: [
+                        {
+                            id: 'template-a',
+                            name: 'Template A',
+                            fields: {
+                                playerCapacity: { defaultValue: 4 },
+                                durationInMins: { defaultValue: 60 },
+                                format: { defaultValue: 'Standard', options: ['Standard'] },
+                            },
+                        },
+                        {
+                            id: 'template-b',
+                            name: 'Template B',
+                            fields: {
+                                playerCapacity: { defaultValue: 8 },
+                                durationInMins: { defaultValue: 90 },
+                                format: { defaultValue: 'Modern', options: ['Modern'] },
+                            },
+                        },
+                    ],
+                }),
+            } as Response)
+
+        const { result } = renderHook(() => useEventForm())
+
+        await waitFor(() => {
+            expect(result.current.games).toHaveLength(2)
+        })
+
+        act(() => {
+            result.current.updateField('gameType', '1')
+        })
+
+        expect(result.current.form.playerCapacity).toBe('4')
+        expect(result.current.form.durationInMins).toBe('60')
+        expect(result.current.form.format).toBe('Standard')
+
+        act(() => {
+            result.current.updateField('playerCapacity', '10')
+            result.current.updateField('durationInMins', '30')
+            result.current.updateField('format', 'Custom')
+        })
+
+        act(() => {
+            result.current.updateField('gameType', '2')
+        })
+
+        expect(result.current.form.playerCapacity).toBe('8')
+        expect(result.current.form.durationInMins).toBe('90')
+        expect(result.current.form.format).toBe('Modern')
+    })
 })

@@ -3,7 +3,7 @@
 import PageShell from '@/components/common/PageShell'
 import { SectionLinkRow } from '@/components/common'
 import { useSelectedRolesContext } from '@/context/SelectedRoles/SelectedRolesContext'
-import { FieldKey, useEventForm } from './hooks/useEventForm'
+import { useEventForm } from './hooks/useEventForm'
 
 const inputStyle = {
     padding: '0.75rem',
@@ -24,7 +24,7 @@ const renderField = ({
 }: {
     fieldKey: string
     label: string
-    field: { type?: string; min?: number; max?: number } | undefined
+    field: { type?: string; min?: number; max?: number; options?: string[] } | undefined
     form: ReturnType<typeof useEventForm>['form']
     errors: ReturnType<typeof useEventForm>['errors']
     updateField: ReturnType<typeof useEventForm>['updateField']
@@ -70,7 +70,8 @@ const renderField = ({
     }
 
     if (field?.type === 'select') {
-        const formatOptions = getFormatOptions()
+        const templateOptions = field?.options ?? []
+        const selectOptions = templateOptions.length > 0 ? templateOptions : getFormatOptions()
 
         return (
             <label key={fieldKey} style={{ display: 'grid', gap: '0.35rem' }}>
@@ -79,12 +80,12 @@ const renderField = ({
                     value={value}
                     onChange={(event) => updateField(fieldKey as any, event.target.value)}
                     style={inputStyle}
-                    disabled={!form.gameType || formatOptions.length === 0}
+                    disabled={!form.gameType || selectOptions.length === 0}
                 >
                     <option value="">Select a format</option>
-                    {formatOptions.map((formatOption) => (
-                        <option key={formatOption} value={formatOption}>
-                            {formatOption}
+                    {selectOptions.map((option) => (
+                        <option key={option} value={option}>
+                            {option}
                         </option>
                     ))}
                 </select>
@@ -92,8 +93,6 @@ const renderField = ({
             </label>
         )
     }
-
-    console.error(`Unsupported field type: ${field?.type}`)
 
     return null
 }
@@ -116,6 +115,7 @@ const EventAddNew = () => {
     } = useEventForm(activeOrganizer?.id)
 
     const selectedTemplateFields = (getSelectedTemplate?.() ?? {}).fields ?? {}
+    console.log
     const visibleFieldKeys = Object.entries(
         selectedTemplateFields as Record<string, { order?: number }>,
     )

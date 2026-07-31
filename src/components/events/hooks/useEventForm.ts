@@ -254,16 +254,15 @@ export const useEventForm = (initialOrganizerId?: number) => {
                             nextState.startAt = String(startDateValue)
                         }
 
-
-                        if (playerCapacityValue !== undefined && playerCapacityValue !== null && (!nextState.playerCapacity || nextState.playerCapacity === String(initialFormState.playerCapacity))) {
+                        if (playerCapacityValue !== undefined && playerCapacityValue !== null) {
                             nextState.playerCapacity = String(playerCapacityValue)
                         }
 
-                        if (durationValue !== undefined && durationValue !== null && (!nextState.durationInMins || nextState.durationInMins === String(initialFormState.durationInMins))) {
+                        if (durationValue !== undefined && durationValue !== null) {
                             nextState.durationInMins = String(durationValue)
                         }
 
-                        if (formatValue !== undefined && formatValue !== null && (!nextState.format || nextState.format === initialFormState.format)) {
+                        if (formatValue !== undefined && formatValue !== null) {
                             nextState.format = String(formatValue)
                         }
                     }
