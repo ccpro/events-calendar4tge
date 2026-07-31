@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
-import db from 'api_lib/db'
+import { NextRequest, NextResponse } from "next/server"
+import db from "../../_lib/db"
 
-function createPlayer(uuid: string) {
+const createPlayer = (uuid: string) => {
     const existingPlayer = db
         .prepare(`
             SELECT id, uuid, name, createdAt

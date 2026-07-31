@@ -43,7 +43,8 @@ const GeneratePlayerAccountWithQrCode = ({ onRegister }: GeneratePlayerAccountWi
         return <p style={{ color: 'red' }}>{error}</p>
     }
 
-    const qr_registration_link = ip ? `http://${ip}:3000/api/register_player/${uuid}` : ''
+    const registration_form = `http://${ip}:3000/register/player/${uuid}`
+    const registration_api = ip ? `http://${ip}:3000/api/player/${uuid}` : undefined
 
     const handleRegister = async () => {
         if (!uuid) {
@@ -53,7 +54,7 @@ const GeneratePlayerAccountWithQrCode = ({ onRegister }: GeneratePlayerAccountWi
         setIsRegistering(true)
 
         try {
-            const response = await fetch(`/api/register_player/${uuid}`)
+            const response = await fetch(registration_api!)
             if (response.ok) {
                 onRegister?.()
             }
@@ -66,9 +67,9 @@ const GeneratePlayerAccountWithQrCode = ({ onRegister }: GeneratePlayerAccountWi
 
     return (
         <div style={{ display: 'grid', gap: '0.75rem' }}>
-            {qr_registration_link ? (
-                <Link href={qr_registration_link} onClick={handleRegister}>
-                    {qr_registration_link}
+            {registration_api ? (
+                <Link href={registration_form} onClick={handleRegister}>
+                    {registration_form}
                 </Link>
             ) : (
                 <span style={{ opacity: 0.7 }}>Loading registration link...</span>
@@ -89,7 +90,7 @@ const GeneratePlayerAccountWithQrCode = ({ onRegister }: GeneratePlayerAccountWi
                 {isRegistering ? 'Registering...' : 'Register player'}
             </button>
             <QRCode
-                value={qr_registration_link || 'https://example.com'}
+                value={registration_form || 'https://example.com'}
                 size={256}
                 bgColor="white"
                 fgColor="black"

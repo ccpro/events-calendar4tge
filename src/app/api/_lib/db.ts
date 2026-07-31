@@ -6,6 +6,7 @@ import path from 'path'
 const dbPath = path.join(process.cwd(), 'dev.db')
 
 export const organizerUuids = [randomUUID(), randomUUID()]
+export const playerUuids = [randomUUID(), randomUUID(), randomUUID(), randomUUID()]
 
 // Initialize the database connection
 const db = new Database(dbPath, { verbose: console.log })
@@ -18,9 +19,18 @@ db.exec(`CREATE TABLE IF NOT EXISTS role (
     createdAt datetime NOT NULL default (datetime('now')),
     roleType int NOT NULL CHECK (roleType IN (1, 2))
 )`)
-db.exec(`INSERT INTO role (uuid, name, roleType) SELECT '${organizerUuids[0]}', 'Organizer 1', 1 WHERE NOT EXISTS (SELECT 1 FROM role)
-    UNION ALL
+db.exec(`INSERT INTO role (uuid, name, roleType) 
+    SELECT '${organizerUuids[0]}', 'Organizer 1', 1 WHERE NOT EXISTS (SELECT 1 FROM role)
+        UNION ALL
     SELECT '${organizerUuids[1]}', 'Organizer 2', 1 WHERE NOT EXISTS (SELECT 1 FROM role)
+        UNION ALL
+    SELECT '${playerUuids[0]}', 'Player 1', 2 WHERE NOT EXISTS (SELECT 1 FROM role)
+        UNION ALL
+    SELECT '${playerUuids[1]}', 'Player 2', 2 WHERE NOT EXISTS (SELECT 1 FROM role)
+        UNION ALL
+    SELECT '${playerUuids[2]}', 'Player 3', 2 WHERE NOT EXISTS (SELECT 1 FROM role)
+        UNION ALL
+    SELECT '${playerUuids[3]}', 'Player 4', 2 WHERE NOT EXISTS (SELECT 1 FROM role)
 `)
 
 db.exec(`CREATE TABLE IF NOT EXISTS game_type (
@@ -36,10 +46,10 @@ db.exec(`CREATE TABLE IF NOT EXISTS game_type (
 db.exec(`INSERT INTO game_type (name, description, template, format, durationInMins, minimumPlayers)
     SELECT 'Magic: The Gathering', 'Classic trading card game with standard and commander formats.', 'mtg-template', 'standard|commander', 60, 2
     WHERE NOT EXISTS (SELECT 1 FROM game_type WHERE template = 'mtg-template')
-    UNION ALL
+        UNION ALL
     SELECT 'Pokémon TCG', 'Fast-paced card battles with standard and expanded play options.', 'pokemon-template', 'standard|expanded', 45, 2
     WHERE NOT EXISTS (SELECT 1 FROM game_type WHERE template = 'pokemon-template')
-    UNION ALL
+        UNION ALL
     SELECT 'One Piece Card Game', 'Anime-inspired card battles with arena-style events.', 'one-piece-template', 'arena-style', 30, 2
     WHERE NOT EXISTS (SELECT 1 FROM game_type WHERE template = 'one-piece-template')
 `)

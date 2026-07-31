@@ -66,6 +66,7 @@ const OrganizerList = () => {
                                     <div style={{ fontWeight: 600 }}>
                                         {isActive ? '✅ ' : ''}
                                         {organizer.name}
+                                        {!isActive ? '' : ' (click to activate)'}
                                     </div>
                                     <div
                                         style={{
