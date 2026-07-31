@@ -10,10 +10,8 @@ type EventRegistrationFormProps = {
 
 const EventRegistrationForm = ({ eventId, playerId }: EventRegistrationFormProps) => {
     const [status, setStatus] = useState<string>('')
-    const [isSubmitting, setIsSubmitting] = useState(false)
 
     const handleAssign = async () => {
-        setIsSubmitting(true)
         setStatus('')
 
         try {
@@ -34,8 +32,6 @@ const EventRegistrationForm = ({ eventId, playerId }: EventRegistrationFormProps
             setStatus(
                 error instanceof Error ? error.message : 'Unable to assign player to this event.',
             )
-        } finally {
-            setIsSubmitting(false)
         }
     }
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { formatDate, isSameDay } from '@/app/common/dateUtils'
+import { isSameDay } from '@/app/common/dateUtils'
 import styles from '@/app/globals.module.css'
 import { useCalendarView } from './hooks/useCalendarView'
 import CalendarSelectedEventsList from './CalendarSelectedEventsList'
@@ -79,7 +79,7 @@ const CalendarView = () => {
                             aria-label={`Select day ${day.date.getDate()}`}
                         >
                             <span>{day.date.getDate()}</span>
-                            {eventsAmount > 0 && `${eventsAmount} events`}
+                            {eventsAmount > 0 && `${eventsAmount} event(s)`}
                         </button>
                     )
                 })}

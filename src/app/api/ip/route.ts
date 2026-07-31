@@ -1,7 +1,7 @@
 import os from 'node:os'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
     const interfaces = os.networkInterfaces()
     const addresses = Object.values(interfaces)
         .flat()

@@ -16,7 +16,7 @@ const getRegistrationForm = (eventId: number, playerId: number, ip: string) => {
     return `http://${ip || 'localhost'}:3000/register/event/${eventId}/${playerId}`
 }
 
-const useCalendarSelectedEventsList = (onRefresh?: () => void) => {
+const useCalendarSelectedEventsList = () => {
     const { activePlayer } = useSelectedRolesContext()
 
     const eventStatus = (event: Event): EventStatus => {
@@ -27,7 +27,7 @@ const useCalendarSelectedEventsList = (onRefresh?: () => void) => {
         const playersAssigned = event.playersAssigned ?? 0
         const minimumPlayers = event.minimumPlayers ?? 0
 
-        const getTooltip = (event: Event): string => {
+        const getTooltip = (): string => {
             return `assigned ${playersAssigned} minimum ${minimumPlayers}`
         }
 
@@ -36,8 +36,8 @@ const useCalendarSelectedEventsList = (onRefresh?: () => void) => {
         if (startsWithinNextHour(event.startAt)) {
             return {
                 color: assignedLessThanMinimum ? 'red' : 'blue',
-                title: `Upcoming in an hour. ${insufficientPlayersWarning} (${playersAssigned} assigned, min ${minimumPlayers})`,
-                tooltip: getTooltip(event),
+                title: `Upcoming in an hour. ${insufficientPlayersWarning} (${playersAssigned} assigned, ${minimumPlayers} minimum)`,
+                tooltip: getTooltip(),
                 state: assignedLessThanMinimum ? 'invalid' : 'valid',
             }
         }
@@ -45,8 +45,8 @@ const useCalendarSelectedEventsList = (onRefresh?: () => void) => {
         if (now < startAt) {
             return {
                 color: assignedLessThanMinimum ? 'red' : 'blue',
-                title: `Upcoming. ${insufficientPlayersWarning} (${playersAssigned} assigned, min ${minimumPlayers})`,
-                tooltip: getTooltip(event),
+                title: `Upcoming. ${insufficientPlayersWarning} (${playersAssigned} assigned, ${minimumPlayers} minimum)`,
+                tooltip: getTooltip(),
                 state: 'valid',
             }
         }
@@ -55,7 +55,7 @@ const useCalendarSelectedEventsList = (onRefresh?: () => void) => {
             return {
                 color: assignedLessThanMinimum ? 'red' : 'green',
                 title: assignedLessThanMinimum ? `Insufficient Players. Haven't met the minimum requirement.` : 'Ongoing',
-                tooltip: getTooltip(event),
+                tooltip: getTooltip(),
                 state: assignedLessThanMinimum ? 'invalid' : 'valid',
             }
         }
@@ -63,7 +63,7 @@ const useCalendarSelectedEventsList = (onRefresh?: () => void) => {
         return {
             color: 'gray',
             title: assignedLessThanMinimum ? 'Insufficient Players. Wasn\'t able to meet the minimum requirement.' : 'Past',
-            tooltip: getTooltip(event),
+            tooltip: getTooltip(),
             state: 'past',
         }
     }

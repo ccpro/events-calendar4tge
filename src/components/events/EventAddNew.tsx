@@ -44,7 +44,9 @@ const renderField = ({
                 <input
                     type={field?.type}
                     value={value}
-                    onChange={(event) => updateField(fieldKey as any, event.target.value)}
+                    onChange={(event) =>
+                        updateField(fieldKey as keyof typeof form, event.target.value)
+                    }
                     style={inputStyle}
                 />
                 {error ? <span style={{ color: 'red', fontSize: '0.9rem' }}>{error}</span> : null}
@@ -61,7 +63,9 @@ const renderField = ({
                     min={minValue}
                     max={maxValue}
                     value={value}
-                    onChange={(event) => updateField(fieldKey as any, event.target.value)}
+                    onChange={(event) =>
+                        updateField(fieldKey as keyof typeof form, event.target.value)
+                    }
                     style={inputStyle}
                 />
                 {error ? <span style={{ color: 'red', fontSize: '0.9rem' }}>{error}</span> : null}
@@ -78,7 +82,9 @@ const renderField = ({
                 <span style={{ fontWeight: 600 }}>{fieldLabel}</span>
                 <select
                     value={value}
-                    onChange={(event) => updateField(fieldKey as any, event.target.value)}
+                    onChange={(event) =>
+                        updateField(fieldKey as keyof typeof form, event.target.value)
+                    }
                     style={inputStyle}
                     disabled={!form.gameType || selectOptions.length === 0}
                 >

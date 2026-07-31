@@ -1,7 +1,5 @@
 'use client'
 
-import type { Event } from '@/common/types'
-
 type SubmitButtonProps = {
     disabled: boolean
     onClick: () => void

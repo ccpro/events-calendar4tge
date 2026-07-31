@@ -15,7 +15,7 @@ const PlayerView = () => {
     const [playerListRefreshKey, setPlayerListRefreshKey] = useState(0)
 
     // PlayerList currently refreshes when the onRefresh callback identity changes.
-    const triggerPlayerListRefresh = useCallback(() => undefined, [playerListRefreshKey])
+    const triggerPlayerListRefresh = useCallback(() => undefined, [])
 
     const handleRegistered = useCallback(async () => {
         try {

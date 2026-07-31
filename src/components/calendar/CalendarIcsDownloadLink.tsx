@@ -1,6 +1,7 @@
 import { createEvents } from 'ics'
 import type { Event } from '@/common/types'
 import { useSelectedRolesContext } from '@/context/SelectedRoles/SelectedRolesContext'
+import Image from 'next/image'
 
 type IcsAttendee = {
     name: string
@@ -104,11 +105,12 @@ const CalendarIcsDownloadLink = () => {
 
     return (
         <button onClick={handleDownload} style={{ cursor: 'pointer' }}>
-            <img
+            <Image
                 src="/calendar.svg"
                 alt="Download calendar"
                 title="Download calendar"
-                style={{ width: '2rem', height: '2rem' }}
+                width="32"
+                height="32"
             />
         </button>
     )

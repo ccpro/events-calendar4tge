@@ -1,6 +1,6 @@
 'use client'
 
-import { PageShell, SectionLinkRow, SubmitButton } from '@/components/common'
+import { PageShell, SubmitButton } from '@/components/common'
 import { useGameTypeForm } from './hooks/useGameTypeForm'
 
 const GameAddNew = () => {
@@ -124,7 +124,7 @@ const GameAddNew = () => {
 
                 <label style={{ display: 'grid', gap: '0.35rem' }}>
                     <span style={{ fontWeight: 600 }}>
-                        Format (use pipe <code>'|'</code> as format separator)
+                        Format (use pipe <code>&lsquo;|&rsquo;</code> as format separator)
                     </span>
                     <input
                         value={form.format}
