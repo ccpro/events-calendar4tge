@@ -3,6 +3,7 @@
         "startAt": {
             "order": 1,
             "name": "Start Date",
+            "required": true,
             "type": "datetime-local"
         },
         "playerCapacity": {
@@ -11,6 +12,7 @@
             "type": "number",
             "min": 2,
             "max": 12,
+            "required": true,
             "defaultValue": 10
         },
         "durationInMins": {
@@ -19,6 +21,7 @@
             "type": "number",
             "min": 10,
             "max": 45,
+            "required": true,
             "defaultValue": 30
         },
         "format": {
@@ -26,6 +29,7 @@
             "name": "Format",
             "type": "select",
             "defaultValue": "Arena",
+            "required": true,
             "options": ["Arena"]
         }
     }

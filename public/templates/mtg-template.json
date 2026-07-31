@@ -3,6 +3,7 @@
         "startAt": {
             "order": 1,
             "name": "Start Date",
+            "required": true,
             "type": "datetime-local"
         },
         "playerCapacity": {
@@ -11,6 +12,7 @@
             "type": "number",
             "min": 2,
             "max": 12,
+            "required": true,
             "defaultValue": 4
         },
         "durationInMins": {
@@ -19,12 +21,14 @@
             "type": "number",
             "min": 10,
             "max": 45,
+            "required": true,
             "defaultValue": 30
         },
         "format": {
             "order": 4,
             "name": "Format",
             "type": "select",
+            "required": true,
             "options": ["Standard", "Modern", "Commander"]
         }
     }

@@ -210,15 +210,15 @@ const EventAddNew = () => {
                     ) : null}
                     <button
                         type="submit"
-                        disabled={submitting}
+                        disabled={submitting || !form.gameType}
                         style={{
                             padding: '0.8rem 1rem',
                             borderRadius: '10px',
                             border: 'none',
-                            background: submitting ? '#444' : 'white',
-                            color: submitting ? '#ccc' : 'black',
+                            background: submitting || !form.gameType ? '#444' : 'white',
+                            color: submitting || !form.gameType ? '#ccc' : 'black',
                             fontWeight: 700,
-                            cursor: submitting ? 'not-allowed' : 'pointer',
+                            cursor: submitting || !form.gameType ? 'not-allowed' : 'pointer',
                             width: 'fit-content',
                         }}
                     >

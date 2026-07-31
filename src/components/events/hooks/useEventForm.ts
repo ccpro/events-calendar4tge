@@ -10,6 +10,7 @@ type GameTemplateField = {
     max?: number,
     defaultValue?: unknown
     options?: string[]
+    required: boolean
 }
 
 type GameTemplate = {
@@ -33,6 +34,7 @@ const DEFAULT_GAME_TEMPLATE_FIELDS = {
         order: 1,
         name: 'Start Date',
         type: 'datetime-local',
+        required: true,
     },
     playerCapacity: {
         order: 2,
@@ -41,6 +43,7 @@ const DEFAULT_GAME_TEMPLATE_FIELDS = {
         min: 2,
         max: 12,
         defaultValue: 4,
+        required: true,
     },
     durationInMins: {
         order: 3,
@@ -49,12 +52,14 @@ const DEFAULT_GAME_TEMPLATE_FIELDS = {
         min: 15,
         max: 120,
         defaultValue: 60,
+        required: true,
     },
     format: {
         order: 5,
         name: 'Format',
         type: 'select',
         options: ['Standard'],
+        required: true,
     },
 } as const satisfies Record<string, GameTemplateField>
 
@@ -177,44 +182,47 @@ export const useEventForm = (initialOrganizerId?: number) => {
 
         const templateFields = (selectedTemplate.fields ?? {}) as Record<string, GameTemplateField>
 
-        if (templateFields['startAt']) {
-            if (!form.startAt) {
-                nextErrors.startAt = 'Start date is required.'
-            } else {
-                const selectedStartAt = new Date(form.startAt)
+        for (const key of Object.keys(templateFields)) {
+            const fieldKey = key as keyof EventFormState
+            const field = templateFields[key]
+
+            if (field?.required && !form[fieldKey]) {
+                nextErrors[fieldKey] = `${key} is required.`
+            }
+
+            if (templateFields[key]?.type === 'datetime-local' && templateFields[key]?.required) {
+                const datetimeField = new Date(form[fieldKey])
                 const now = new Date()
 
-                if (Number.isNaN(selectedStartAt.getTime())) {
-                    nextErrors.startAt = 'Start date is invalid.'
-                } else if (selectedStartAt.getTime() < now.getTime()) {
-                    nextErrors.startAt = 'Start date cannot be in the past.'
+                if (Number.isNaN(datetimeField.getTime())) {
+                    nextErrors[fieldKey] = `${templateFields[key]?.name} is invalid.`
+                } else if (datetimeField.getTime() < now.getTime()) {
+                    nextErrors[fieldKey] = `${templateFields[key]?.name} cannot be in the past.`
                 }
             }
-        }
+            else if (field?.type === 'number' && field?.required) {
+                const numberField = templateFields[key] ?? templateFields.duration
+                const minDuration = typeof numberField?.min === 'number' ? numberField.min : null
+                const maxDuration = typeof numberField?.max === 'number' ? numberField.max : null
 
-        if (templateFields['playerCapacity']) {
-            if (!Number.isInteger(playerCapacity) || playerCapacity < 1 || playerCapacity > 30) {
-                nextErrors.playerCapacity = 'Player capacity must be between 1 and 30.'
+                const value = Number(form[fieldKey])
+                if (Number.isNaN(value)) {
+                    nextErrors[fieldKey] = `${field?.name} must be a number.`
+                } else {
+                    if (minDuration !== null && value < minDuration) {
+                        nextErrors[fieldKey] = `${field?.name} must be at least ${minDuration}.`
+                    }
+                    if (maxDuration !== null && value > maxDuration) {
+                        nextErrors[fieldKey] = `${field?.name} must be at most ${maxDuration}.`
+                    }
+                }
             }
-        }
+            else if (field?.type === 'select' && field?.required) {
+                const hasGameFormat = Boolean(selectedGame?.format)
 
-        if (templateFields['durationInMins'] || templateFields.duration) {
-            const durationField = templateFields['durationInMins'] ?? templateFields.duration
-            const minDuration = typeof durationField?.min === 'number' ? durationField.min : 1
-            const maxDuration = typeof durationField?.max === 'number' ? durationField.max : Number.POSITIVE_INFINITY
-
-            if (!Number.isInteger(durationInMins) || durationInMins < minDuration || (Number.isFinite(maxDuration) && durationInMins > maxDuration)) {
-                nextErrors.durationInMins = `Duration must be between ${minDuration} and ${maxDuration}.`
-            }
-        }
-
-        if (form.gameType && templateFields.format) {
-            const formatField = templateFields.format
-            const hasFormatOptions = Boolean(formatField?.options?.length)
-            const hasGameFormat = Boolean(selectedGame?.format)
-
-            if (hasGameFormat && !form.format) {
-                nextErrors.format = 'Format is required.'
+                if (hasGameFormat && !form.format) {
+                    nextErrors.format = 'Format is required.'
+                }
             }
         }
 
@@ -240,6 +248,7 @@ export const useEventForm = (initialOrganizerId?: number) => {
                     }
 
                     if (selectedTemplate?.fields) {
+                        // todo: get rid of hardcoded fields
                         const startDateField = selectedTemplate.fields?.['startAt']
                         const playerCapacityField = selectedTemplate.fields?.['playerCapacity']
                         const durationField = selectedTemplate.fields?.['durationInMins'] ?? selectedTemplate.fields?.duration
@@ -296,6 +305,7 @@ export const useEventForm = (initialOrganizerId?: number) => {
                 }
 
                 if (selectedTemplate?.fields) {
+                    //todo: get rid of hardcoded fields
                     const startDateField = selectedTemplate.fields?.['startAt']
                     const playerCapacityField = selectedTemplate.fields?.['playerCapacity']
                     const durationField = selectedTemplate.fields?.['durationInMins'] ?? selectedTemplate.fields?.duration
@@ -343,6 +353,7 @@ export const useEventForm = (initialOrganizerId?: number) => {
             setSubmitting(true)
             setMessage(null)
 
+            // todo: get template driven values dynamically
             try {
                 const response = await fetch('/api/events', {
                     method: 'POST',
