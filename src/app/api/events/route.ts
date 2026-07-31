@@ -23,6 +23,15 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Start date is required.' }, { status: 400 })
         }
 
+        const selectedStartAt = new Date(startAt)
+        if (Number.isNaN(selectedStartAt.getTime())) {
+            return NextResponse.json({ error: 'Start date is invalid.' }, { status: 400 })
+        }
+
+        if (selectedStartAt.getTime() < Date.now()) {
+            return NextResponse.json({ error: 'Start date cannot be in the past.' }, { status: 400 })
+        }
+
         if (!Number.isInteger(playerCapacity) || playerCapacity < 1 || playerCapacity > 30) {
             return NextResponse.json({ error: 'Player capacity must be between 1 and 30.' }, { status: 400 })
         }

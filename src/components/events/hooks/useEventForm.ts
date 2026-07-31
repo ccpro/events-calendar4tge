@@ -86,6 +86,15 @@ export const useEventForm = (initialOrganizerId?: number) => {
 
         if (!form.startAt) {
             nextErrors.startAt = 'Start date is required.'
+        } else {
+            const selectedStartAt = new Date(form.startAt)
+            const now = new Date()
+
+            if (Number.isNaN(selectedStartAt.getTime())) {
+                nextErrors.startAt = 'Start date is invalid.'
+            } else if (selectedStartAt.getTime() < now.getTime()) {
+                nextErrors.startAt = 'Start date cannot be in the past.'
+            }
         }
 
         if (!Number.isInteger(playerCapacity) || playerCapacity < 1 || playerCapacity > 30) {
