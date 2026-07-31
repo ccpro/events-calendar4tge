@@ -60,9 +60,6 @@ const GameList = () => {
                         <th className={styles.tableHeaderCell}>Minimum Players</th>
                         <th className={styles.tableHeaderCell}>Format</th>
                         <th className={styles.tableHeaderCell}>Created (utc)</th>
-                        <th className={styles.tableHeaderCell}>Duration (mins)</th>
-                        <th className={styles.tableHeaderCell}>Min Players</th>
-                        <th className={styles.tableHeaderCell}>Format</th>
                     </tr>
                 </thead>
                 <tbody>
