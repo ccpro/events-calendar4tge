@@ -64,7 +64,7 @@ const DEFAULT_GAME_TEMPLATE_FIELDS = {
 } as const satisfies Record<string, GameTemplateField>
 
 const TEMPLATE_FIELD_KEYS = Object.keys(DEFAULT_GAME_TEMPLATE_FIELDS) as Array<keyof typeof DEFAULT_GAME_TEMPLATE_FIELDS>
-export type FieldKey = keyof EventFormState | (typeof TEMPLATE_FIELD_KEYS)[number]
+type FieldKey = keyof EventFormState | (typeof TEMPLATE_FIELD_KEYS)[number]
 
 const DEFAULT_GAME_TEMPLATE: GameTemplate = {
     id: 'default',
@@ -72,9 +72,58 @@ const DEFAULT_GAME_TEMPLATE: GameTemplate = {
     fields: DEFAULT_GAME_TEMPLATE_FIELDS,
 }
 
-
 export type EventFormErrors = Partial<Record<keyof EventFormState, string>>
 
+type EventSubmitPayload = {
+    organizer: number
+    gameType: number
+    [key: string]: string | number
+}
+
+type FormFieldValue = EventFormState[keyof EventFormState]
+
+type TemplateFieldEntry = [string, GameTemplateField]
+
+const getTemplateFieldEntries = (template: GameTemplate | undefined): TemplateFieldEntry[] => {
+    const templateFields = (template?.fields ?? {}) as Record<string, GameTemplateField>
+    return Object.entries(templateFields) as TemplateFieldEntry[]
+}
+
+const isTemplateFieldKey = (key: string): key is keyof EventFormState => {
+    return key in initialFormState
+}
+
+const getFormValue = (form: EventFormState, key: string): FormFieldValue | undefined => {
+    if (!isTemplateFieldKey(key)) {
+        return undefined
+    }
+
+    return form[key]
+}
+
+const applyTemplateDefaults = (current: EventFormState, template: GameTemplate | undefined, force = false): EventFormState => {
+    const nextState = { ...current }
+
+    for (const [key, field] of getTemplateFieldEntries(template)) {
+        if (!isTemplateFieldKey(key)) {
+            continue
+        }
+
+        const fieldValue = field?.defaultValue ?? field?.['defaultValue']
+        if (fieldValue === undefined || fieldValue === null) {
+            continue
+        }
+
+        const shouldApplyDefault = force || !current[key] || current[key] === initialFormState[key]
+        if (shouldApplyDefault) {
+            nextState[key] = String(fieldValue) as EventFormState[typeof key]
+        }
+    }
+
+    return nextState
+}
+
+// todo: populate initialFormState with template data/default values
 export const initialFormState: EventFormState = {
     organizer: '',
     gameType: '',
@@ -168,9 +217,6 @@ export const useEventForm = (initialOrganizerId?: number) => {
     const validate = useCallback(() => {
         const nextErrors: EventFormErrors = {}
         const selectedTemplate = getSelectedTemplate()
-        const selectedGame = games.find((gameType) => String(gameType.id) === form.gameType)
-        const playerCapacity = Number(form.playerCapacity)
-        const durationInMins = Number(form.durationInMins)
 
         if (!form.organizer) {
             nextErrors.organizer = 'Organizer is required.'
@@ -180,54 +226,54 @@ export const useEventForm = (initialOrganizerId?: number) => {
             nextErrors.gameType = 'Game type is required.'
         }
 
-        const templateFields = (selectedTemplate.fields ?? {}) as Record<string, GameTemplateField>
-
-        for (const key of Object.keys(templateFields)) {
-            const fieldKey = key as keyof EventFormState
-            const field = templateFields[key]
-
-            if (field?.required && !form[fieldKey]) {
-                nextErrors[fieldKey] = `${key} is required.`
+        for (const [key, field] of getTemplateFieldEntries(selectedTemplate)) {
+            if (!isTemplateFieldKey(key)) {
+                continue
             }
 
-            if (templateFields[key]?.type === 'datetime-local' && templateFields[key]?.required) {
-                const datetimeField = new Date(form[fieldKey])
+            const fieldValue = getFormValue(form, key)
+
+            if (field?.required && !fieldValue) {
+                nextErrors[key] = `${key} is required.`
+            }
+
+            if (field?.type === 'datetime-local' && field?.required) {
+                const datetimeField = new Date(String(fieldValue ?? ''))
                 const now = new Date()
 
                 if (Number.isNaN(datetimeField.getTime())) {
-                    nextErrors[fieldKey] = `${templateFields[key]?.name} is invalid.`
+                    nextErrors[key] = `${field?.name} is invalid.`
                 } else if (datetimeField.getTime() < now.getTime()) {
-                    nextErrors[fieldKey] = `${templateFields[key]?.name} cannot be in the past.`
+                    nextErrors[key] = `${field?.name} cannot be in the past.`
                 }
             }
             else if (field?.type === 'number' && field?.required) {
-                const numberField = templateFields[key] ?? templateFields.duration
-                const minDuration = typeof numberField?.min === 'number' ? numberField.min : null
-                const maxDuration = typeof numberField?.max === 'number' ? numberField.max : null
+                const minValue = typeof field?.min === 'number' ? field.min : null
+                const maxValue = typeof field?.max === 'number' ? field.max : null
 
-                const value = Number(form[fieldKey])
+                const value = Number(fieldValue ?? '')
                 if (Number.isNaN(value)) {
-                    nextErrors[fieldKey] = `${field?.name} must be a number.`
+                    nextErrors[key] = `${field?.name} must be a number.`
                 } else {
-                    if (minDuration !== null && value < minDuration) {
-                        nextErrors[fieldKey] = `${field?.name} must be at least ${minDuration}.`
+                    if (minValue !== null && value < minValue) {
+                        nextErrors[key] = `${field?.name} must be at least ${minValue}.`
                     }
-                    if (maxDuration !== null && value > maxDuration) {
-                        nextErrors[fieldKey] = `${field?.name} must be at most ${maxDuration}.`
+                    if (maxValue !== null && value > maxValue) {
+                        nextErrors[key] = `${field?.name} must be at most ${maxValue}.`
                     }
                 }
             }
             else if (field?.type === 'select' && field?.required) {
-                const hasGameFormat = Boolean(selectedGame?.format)
-
-                if (hasGameFormat && !form.format) {
-                    nextErrors.format = 'Format is required.'
+                if (!fieldValue) {
+                    nextErrors[key] = `${field?.name} is required.`
                 }
             }
         }
 
         return nextErrors
-    }, [form.organizer, form.gameType, form.startAt, form.playerCapacity, form.durationInMins, form.format, getSelectedTemplate, games])
+    }, [getSelectedTemplate, games,
+        form.organizer, form.gameType, form.startAt, form.format,
+        ...Object.keys((getSelectedTemplate().fields ?? {}) as Record<string, GameTemplateField>)])
 
     const updateField = useCallback((field: FieldKey, value: string) => {
         setForm((current) => {
@@ -238,43 +284,17 @@ export const useEventForm = (initialOrganizerId?: number) => {
                 const selectedTemplate = gameTemplates.find((template) => template.id === selectedGame?.template) ?? DEFAULT_GAME_TEMPLATE
 
                 if (selectedGame) {
-                    if (selectedGame.durationInMins !== undefined) {
-                        nextState.durationInMins = String(selectedGame.durationInMins)
-                    }
+                    const nextStateWithDefaults = applyTemplateDefaults(
+                        {
+                            ...nextState,
+                            durationInMins: selectedGame.durationInMins !== undefined ? String(selectedGame.durationInMins) : nextState.durationInMins,
+                            format: selectedGame.format ? (getFormatOptionsFromGame(selectedGame, selectedTemplate)[0] ?? '') : nextState.format,
+                        },
+                        selectedTemplate,
+                        true,
+                    )
 
-                    if (selectedGame.format) {
-                        const [firstFormat] = getFormatOptionsFromGame(selectedGame, selectedTemplate)
-                        nextState.format = firstFormat ?? ''
-                    }
-
-                    if (selectedTemplate?.fields) {
-                        // todo: get rid of hardcoded fields
-                        const startDateField = selectedTemplate.fields?.['startAt']
-                        const playerCapacityField = selectedTemplate.fields?.['playerCapacity']
-                        const durationField = selectedTemplate.fields?.['durationInMins'] ?? selectedTemplate.fields?.duration
-                        const formatField = selectedTemplate.fields?.format
-
-                        const startDateValue = startDateField?.defaultValue ?? startDateField?.['defaultValue']
-                        const playerCapacityValue = playerCapacityField?.defaultValue ?? playerCapacityField?.['defaultValue']
-                        const durationValue = durationField?.defaultValue ?? durationField?.['defaultValue']
-                        const formatValue = formatField?.defaultValue ?? formatField?.['defaultValue']
-
-                        if (startDateValue !== undefined && startDateValue !== null) {
-                            nextState.startAt = String(startDateValue)
-                        }
-
-                        if (playerCapacityValue !== undefined && playerCapacityValue !== null) {
-                            nextState.playerCapacity = String(playerCapacityValue)
-                        }
-
-                        if (durationValue !== undefined && durationValue !== null) {
-                            nextState.durationInMins = String(durationValue)
-                        }
-
-                        if (formatValue !== undefined && formatValue !== null) {
-                            nextState.format = String(formatValue)
-                        }
-                    }
+                    return nextStateWithDefaults
                 }
             }
 
@@ -304,36 +324,7 @@ export const useEventForm = (initialOrganizerId?: number) => {
                     nextState.format = firstFormat ?? ''
                 }
 
-                if (selectedTemplate?.fields) {
-                    //todo: get rid of hardcoded fields
-                    const startDateField = selectedTemplate.fields?.['startAt']
-                    const playerCapacityField = selectedTemplate.fields?.['playerCapacity']
-                    const durationField = selectedTemplate.fields?.['durationInMins'] ?? selectedTemplate.fields?.duration
-                    const formatField = selectedTemplate.fields?.format
-
-                    const startDateValue = startDateField?.defaultValue ?? startDateField?.['defaultValue']
-                    const playerCapacityValue = playerCapacityField?.defaultValue ?? playerCapacityField?.['defaultValue']
-                    const durationValue = durationField?.defaultValue ?? durationField?.['defaultValue']
-                    const formatValue = formatField?.defaultValue ?? formatField?.['defaultValue']
-
-                    if (startDateValue !== undefined && startDateValue !== null && (!current.startAt || current.startAt === initialFormState.startAt)) {
-                        nextState.startAt = String(startDateValue)
-                    }
-
-                    if (playerCapacityValue !== undefined && playerCapacityValue !== null && (!nextState.playerCapacity || nextState.playerCapacity === String(initialFormState.playerCapacity))) {
-                        nextState.playerCapacity = String(playerCapacityValue)
-                    }
-
-                    if (durationValue !== undefined && durationValue !== null && (!nextState.durationInMins || nextState.durationInMins === String(initialFormState.durationInMins))) {
-                        nextState.durationInMins = String(durationValue)
-                    }
-
-                    if (formatValue !== undefined && formatValue !== null && (!nextState.format || nextState.format === initialFormState.format)) {
-                        nextState.format = String(formatValue)
-                    }
-                }
-
-                return nextState
+                return applyTemplateDefaults(nextState, selectedTemplate, false)
             })
         }
     }, [form.gameType, gameTemplates, games])
@@ -353,19 +344,27 @@ export const useEventForm = (initialOrganizerId?: number) => {
             setSubmitting(true)
             setMessage(null)
 
-            // todo: get template driven values dynamically
+            const dataObject: EventSubmitPayload = {
+                organizer: Number(form.organizer),
+                gameType: Number(form.gameType),
+            }
+
+            for (const [key, field] of getTemplateFieldEntries(getSelectedTemplate())) {
+                const fieldKey = key as keyof EventFormState
+
+                if (field?.type === 'number' && field?.required) {
+                    dataObject[key] = Number(form[fieldKey])
+                }
+                else {
+                    dataObject[key] = form[fieldKey]
+                }
+            }
+
             try {
                 const response = await fetch('/api/events', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        organizer: Number(form.organizer),
-                        gameType: Number(form.gameType),
-                        startAt: form.startAt,
-                        playerCapacity: Number(form.playerCapacity),
-                        durationInMins: Number(form.durationInMins),
-                        format: form.format,
-                    }),
+                    body: JSON.stringify(dataObject),
                 })
 
                 const data = await response.json().catch(() => ({}))
