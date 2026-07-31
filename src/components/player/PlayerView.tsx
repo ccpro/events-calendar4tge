@@ -47,9 +47,6 @@ const PlayerView = () => {
                 </p>
             )}
 
-            <PlayerList onRefresh={triggerPlayerListRefresh} />
-            <EventList viewType="player" />
-
             <div style={{ marginTop: '1.5rem' }}>
                 <button
                     type="button"
@@ -67,6 +64,8 @@ const PlayerView = () => {
                     Register new player
                 </button>
             </div>
+
+            <PlayerList onRefresh={triggerPlayerListRefresh} />
 
             <Modal
                 open={isRegisterOpen}

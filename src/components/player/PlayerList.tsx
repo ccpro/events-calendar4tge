@@ -61,7 +61,7 @@ const PlayerList = ({ onRefresh }: PlayerListProps) => {
                                     <SubmitButton
                                         disabled={activePlayer?.id === player.id}
                                         onClick={() => setActivePlayer(player)}
-                                        cta_text_enabled="Select"
+                                        cta_text_enabled="Select as Active"
                                         cta_text_disabled="Selected"
                                     />
                                 </td>

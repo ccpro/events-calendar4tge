@@ -60,7 +60,7 @@ describe('PlayerView', () => {
                 } as Response)
             }
 
-            if (url.includes('/api/register_player/')) {
+            if (url.includes('/api/player/')) {
                 return Promise.resolve({
                     ok: true,
                     json: async () => ({
@@ -93,7 +93,7 @@ describe('PlayerView', () => {
         fireEvent.click(registrationButton)
 
         await waitFor(() => {
-            expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('/api/register_player/'))
+            expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('/api/player/'))
         })
 
         await waitFor(() => {
