@@ -3,7 +3,7 @@
 import PageShell from '@/components/common/PageShell'
 import { SectionLinkRow } from '@/components/common'
 import { useSelectedRolesContext } from '@/context/SelectedRoles/SelectedRolesContext'
-import { useEventForm } from './hooks/useEventForm'
+import { FieldKey, useEventForm } from './hooks/useEventForm'
 
 const inputStyle = {
     padding: '0.75rem',
@@ -11,6 +11,91 @@ const inputStyle = {
     border: '1px solid rgba(255,255,255,0.25)',
     background: 'black',
     color: 'white',
+}
+
+const renderField = ({
+    fieldKey,
+    label,
+    field,
+    form,
+    errors,
+    updateField,
+    getFormatOptions,
+}: {
+    fieldKey: string
+    label: string
+    field: { type?: string; min?: number; max?: number } | undefined
+    form: ReturnType<typeof useEventForm>['form']
+    errors: ReturnType<typeof useEventForm>['errors']
+    updateField: ReturnType<typeof useEventForm>['updateField']
+    getFormatOptions: ReturnType<typeof useEventForm>['getFormatOptions']
+}) => {
+    const error = errors[fieldKey as keyof typeof errors]
+    const value = form[fieldKey as keyof typeof form]
+    const minValue = field?.min ?? 2
+    const maxValue = field?.max ?? 30
+    const fieldLabel =
+        field?.type === 'number' ? `${label} (min ${minValue}, max ${maxValue})` : label
+
+    if (field?.type === 'datetime-local') {
+        return (
+            <label key={fieldKey} style={{ display: 'grid', gap: '0.35rem' }}>
+                <span style={{ fontWeight: 600 }}>{fieldLabel}</span>
+                <input
+                    type={field?.type}
+                    value={value}
+                    onChange={(event) => updateField(fieldKey as any, event.target.value)}
+                    style={inputStyle}
+                />
+                {error ? <span style={{ color: 'red', fontSize: '0.9rem' }}>{error}</span> : null}
+            </label>
+        )
+    }
+
+    if (field?.type === 'number') {
+        return (
+            <label key={fieldKey} style={{ display: 'grid', gap: '0.35rem' }}>
+                <span style={{ fontWeight: 600 }}>{fieldLabel}</span>
+                <input
+                    type="number"
+                    min={minValue}
+                    max={maxValue}
+                    value={value}
+                    onChange={(event) => updateField(fieldKey as any, event.target.value)}
+                    style={inputStyle}
+                />
+                {error ? <span style={{ color: 'red', fontSize: '0.9rem' }}>{error}</span> : null}
+            </label>
+        )
+    }
+
+    if (field?.type === 'select') {
+        const formatOptions = getFormatOptions()
+
+        return (
+            <label key={fieldKey} style={{ display: 'grid', gap: '0.35rem' }}>
+                <span style={{ fontWeight: 600 }}>{fieldLabel}</span>
+                <select
+                    value={value}
+                    onChange={(event) => updateField(fieldKey as any, event.target.value)}
+                    style={inputStyle}
+                    disabled={!form.gameType || formatOptions.length === 0}
+                >
+                    <option value="">Select a format</option>
+                    {formatOptions.map((formatOption) => (
+                        <option key={formatOption} value={formatOption}>
+                            {formatOption}
+                        </option>
+                    ))}
+                </select>
+                {error ? <span style={{ color: 'red', fontSize: '0.9rem' }}>{error}</span> : null}
+            </label>
+        )
+    }
+
+    console.error(`Unsupported field type: ${field?.type}`)
+
+    return null
 }
 
 const EventAddNew = () => {
@@ -77,7 +162,6 @@ const EventAddNew = () => {
                             </span>
                         ) : null}
                     </label>
-
                     <label style={{ display: 'grid', gap: '0.35rem' }}>
                         <span style={{ fontWeight: 600 }}>Game</span>
                         <select
@@ -99,110 +183,21 @@ const EventAddNew = () => {
                         ) : null}
                     </label>
 
-                    {visibleFieldKeys.map((fieldKey) => {
-                        const field = selectedTemplateFields[fieldKey]
-                        const label = field?.name || fieldKey
+                    {form.gameType &&
+                        visibleFieldKeys.map((fieldKey) => {
+                            const field = selectedTemplateFields[fieldKey]
+                            const label = field?.name || fieldKey
 
-                        if (fieldKey === 'startAt') {
-                            return (
-                                <label key={fieldKey} style={{ display: 'grid', gap: '0.35rem' }}>
-                                    <span style={{ fontWeight: 600 }}>{label}</span>
-                                    <input
-                                        type="datetime-local"
-                                        value={form.startAt}
-                                        onChange={(event) =>
-                                            updateField('startAt', event.target.value)
-                                        }
-                                        style={inputStyle}
-                                    />
-                                    {errors.startAt ? (
-                                        <span style={{ color: 'red', fontSize: '0.9rem' }}>
-                                            {errors.startAt}
-                                        </span>
-                                    ) : null}
-                                </label>
-                            )
-                        }
-
-                        if (fieldKey === 'playerCapacity') {
-                            return (
-                                <label key={fieldKey} style={{ display: 'grid', gap: '0.35rem' }}>
-                                    <span
-                                        style={{ fontWeight: 600 }}
-                                    >{`${label} (minimum 2 players)`}</span>
-                                    <input
-                                        type="number"
-                                        min={2}
-                                        max={30}
-                                        value={form.playerCapacity}
-                                        onChange={(event) =>
-                                            updateField('playerCapacity', event.target.value)
-                                        }
-                                        style={inputStyle}
-                                    />
-                                    {errors.playerCapacity ? (
-                                        <span style={{ color: 'red', fontSize: '0.9rem' }}>
-                                            {errors.playerCapacity}
-                                        </span>
-                                    ) : null}
-                                </label>
-                            )
-                        }
-
-                        if (fieldKey === 'durationInMins') {
-                            return (
-                                <label key={fieldKey} style={{ display: 'grid', gap: '0.35rem' }}>
-                                    <span style={{ fontWeight: 600 }}>{label}</span>
-                                    <input
-                                        type="number"
-                                        min={1}
-                                        value={form.durationInMins}
-                                        onChange={(event) =>
-                                            updateField('durationInMins', event.target.value)
-                                        }
-                                        style={inputStyle}
-                                    />
-                                    {errors.durationInMins ? (
-                                        <span style={{ color: 'red', fontSize: '0.9rem' }}>
-                                            {errors.durationInMins}
-                                        </span>
-                                    ) : null}
-                                </label>
-                            )
-                        }
-
-                        if (fieldKey === 'format') {
-                            const formatOptions = getFormatOptions()
-                            return (
-                                <label key={fieldKey} style={{ display: 'grid', gap: '0.35rem' }}>
-                                    <span style={{ fontWeight: 600 }}>{label}</span>
-                                    <select
-                                        value={form.format}
-                                        onChange={(event) =>
-                                            updateField('format', event.target.value)
-                                        }
-                                        style={inputStyle}
-                                        disabled={!form.gameType || formatOptions.length === 0}
-                                    >
-                                        <option value="">Select a format</option>
-                                        {formatOptions.map((formatOption) => (
-                                            <option key={formatOption} value={formatOption}>
-                                                {formatOption}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {errors.format ? (
-                                        <span style={{ color: 'red', fontSize: '0.9rem' }}>
-                                            {errors.format}
-                                        </span>
-                                    ) : null}
-                                </label>
-                            )
-                        }
-
-                        return null
-                    })}
-
+                            return renderField({
+                                fieldKey,
+                                label,
+                                field,
+                                form,
+                                errors,
+                                updateField,
+                                getFormatOptions,
+                            })
+                        })}
                     {message ? (
                         <p
                             style={{
@@ -213,7 +208,6 @@ const EventAddNew = () => {
                             {message}
                         </p>
                     ) : null}
-
                     <button
                         type="submit"
                         disabled={submitting}

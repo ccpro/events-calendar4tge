@@ -6,6 +6,8 @@ type GameTemplateField = {
     order?: number
     name?: string
     type?: string
+    min?: number,
+    max?: number,
     defaultValue?: unknown
     options?: string[]
 }
@@ -26,30 +28,43 @@ export type EventFormState = {
     format: string
 }
 
-type FieldKey = 'startAt' | 'playerCapacity' | 'durationInMins' | 'minimumPlayers' | 'format'
+const DEFAULT_GAME_TEMPLATE_FIELDS = {
+    startAt: {
+        order: 1,
+        name: 'Start Date',
+        type: 'datetime-local',
+    },
+    playerCapacity: {
+        order: 2,
+        name: 'Player Capacity',
+        type: 'number',
+        min: 2,
+        max: 12,
+        defaultValue: 4,
+    },
+    durationInMins: {
+        order: 3,
+        name: 'Duration',
+        type: 'number',
+        min: 15,
+        max: 120,
+        defaultValue: 60,
+    },
+    format: {
+        order: 5,
+        name: 'Format',
+        type: 'select',
+        options: ['Standard'],
+    },
+} as const satisfies Record<string, GameTemplateField>
+
+const TEMPLATE_FIELD_KEYS = Object.keys(DEFAULT_GAME_TEMPLATE_FIELDS) as Array<keyof typeof DEFAULT_GAME_TEMPLATE_FIELDS>
+export type FieldKey = keyof EventFormState | (typeof TEMPLATE_FIELD_KEYS)[number]
 
 const DEFAULT_GAME_TEMPLATE: GameTemplate = {
     id: 'default',
     name: 'Default',
-    fields: {
-        "startAt": {
-            order: 1,
-            name: 'Start Date',
-            type: 'datetime-utc',
-        },
-        "playerCapacity": {
-            order: 2,
-            name: 'Player Capacity',
-            type: 'number',
-            defaultValue: 4,
-        },
-        "durationInMins": {
-            order: 3,
-            name: 'Duration',
-            type: 'number',
-            defaultValue: 60,
-        },
-    },
+    fields: DEFAULT_GAME_TEMPLATE_FIELDS,
 }
 
 
@@ -118,6 +133,24 @@ export const useEventForm = (initialOrganizerId?: number) => {
         }
     }, [initialOrganizerId])
 
+    const getFormatOptionsFromGame = (game: Game | undefined, template: GameTemplate | undefined): string[] => {
+        if (game?.format) {
+            return game.format
+                .split('|')
+                .map((item) => item.trim())
+                .filter(Boolean)
+        }
+
+        const formatField = template?.fields?.format
+        const templateOptions = formatField?.options
+
+        if (templateOptions && templateOptions.length > 0) {
+            return templateOptions.map((item) => item.trim()).filter(Boolean)
+        }
+
+        return []
+    }
+
     const getSelectedTemplate = useCallback((): GameTemplate => {
         if (!form.gameType) {
             return DEFAULT_GAME_TEMPLATE
@@ -130,6 +163,7 @@ export const useEventForm = (initialOrganizerId?: number) => {
     const validate = useCallback(() => {
         const nextErrors: EventFormErrors = {}
         const selectedTemplate = getSelectedTemplate()
+        const selectedGame = games.find((gameType) => String(gameType.id) === form.gameType)
         const playerCapacity = Number(form.playerCapacity)
         const durationInMins = Number(form.durationInMins)
 
@@ -164,22 +198,30 @@ export const useEventForm = (initialOrganizerId?: number) => {
             }
         }
 
-        if (templateFields.duration) {
-            if (!Number.isInteger(durationInMins) || durationInMins < 1) {
-                nextErrors.durationInMins = 'Duration must be at least 1 minute.'
+        if (templateFields['durationInMins'] || templateFields.duration) {
+            const durationField = templateFields['durationInMins'] ?? templateFields.duration
+            const minDuration = typeof durationField?.min === 'number' ? durationField.min : 1
+            const maxDuration = typeof durationField?.max === 'number' ? durationField.max : Number.POSITIVE_INFINITY
+
+            if (!Number.isInteger(durationInMins) || durationInMins < minDuration || (Number.isFinite(maxDuration) && durationInMins > maxDuration)) {
+                nextErrors.durationInMins = `Duration must be between ${minDuration} and ${maxDuration}.`
             }
         }
 
-        if (templateFields.format) {
-            if (!form.format) {
+        if (form.gameType && templateFields.format) {
+            const formatField = templateFields.format
+            const hasFormatOptions = Boolean(formatField?.options?.length)
+            const hasGameFormat = Boolean(selectedGame?.format)
+
+            if (hasGameFormat && !form.format) {
                 nextErrors.format = 'Format is required.'
             }
         }
 
         return nextErrors
-    }, [form.organizer, form.gameType, form.startAt, form.playerCapacity, form.durationInMins, form.format, getSelectedTemplate])
+    }, [form.organizer, form.gameType, form.startAt, form.playerCapacity, form.durationInMins, form.format, getSelectedTemplate, games])
 
-    const updateField = useCallback((field: keyof EventFormState, value: string) => {
+    const updateField = useCallback((field: FieldKey, value: string) => {
         setForm((current) => {
             const nextState = { ...current, [field]: value }
 
@@ -188,11 +230,6 @@ export const useEventForm = (initialOrganizerId?: number) => {
                 const selectedTemplate = gameTemplates.find((template) => template.id === selectedGame?.template) ?? DEFAULT_GAME_TEMPLATE
 
                 if (selectedGame) {
-
-                    if (selectedGame.minimumPlayers !== undefined && (!current.playerCapacity || current.playerCapacity === String(initialFormState.playerCapacity))) {
-                        nextState.playerCapacity = String(selectedGame.minimumPlayers)
-                    }
-
                     if (selectedGame.durationInMins !== undefined) {
                         nextState.durationInMins = String(selectedGame.durationInMins)
                     }
@@ -205,19 +242,18 @@ export const useEventForm = (initialOrganizerId?: number) => {
                     if (selectedTemplate?.fields) {
                         const startDateField = selectedTemplate.fields?.['startAt']
                         const playerCapacityField = selectedTemplate.fields?.['playerCapacity']
-                        const minimumPlayersField = selectedTemplate.fields?.['minimumPlayers']
-                        const durationField = selectedTemplate.fields?.duration
+                        const durationField = selectedTemplate.fields?.['durationInMins'] ?? selectedTemplate.fields?.duration
                         const formatField = selectedTemplate.fields?.format
 
                         const startDateValue = startDateField?.defaultValue ?? startDateField?.['defaultValue']
                         const playerCapacityValue = playerCapacityField?.defaultValue ?? playerCapacityField?.['defaultValue']
-                        const minimumPlayersValue = minimumPlayersField?.defaultValue ?? minimumPlayersField?.['defaultValue']
                         const durationValue = durationField?.defaultValue ?? durationField?.['defaultValue']
                         const formatValue = formatField?.defaultValue ?? formatField?.['defaultValue']
 
                         if (startDateValue !== undefined && startDateValue !== null) {
                             nextState.startAt = String(startDateValue)
                         }
+
 
                         if (playerCapacityValue !== undefined && playerCapacityValue !== null && (!nextState.playerCapacity || nextState.playerCapacity === String(initialFormState.playerCapacity))) {
                             nextState.playerCapacity = String(playerCapacityValue)
@@ -251,10 +287,6 @@ export const useEventForm = (initialOrganizerId?: number) => {
             setForm((current) => {
                 const nextState = { ...current }
 
-                if (selectedGame.minimumPlayers !== undefined && (!current.playerCapacity || current.playerCapacity === String(initialFormState.playerCapacity))) {
-                    nextState.playerCapacity = String(selectedGame.minimumPlayers)
-                }
-
                 if (selectedGame.durationInMins !== undefined && (!current.durationInMins || current.durationInMins === initialFormState.durationInMins)) {
                     nextState.durationInMins = String(selectedGame.durationInMins)
                 }
@@ -267,13 +299,11 @@ export const useEventForm = (initialOrganizerId?: number) => {
                 if (selectedTemplate?.fields) {
                     const startDateField = selectedTemplate.fields?.['startAt']
                     const playerCapacityField = selectedTemplate.fields?.['playerCapacity']
-                    const minimumPlayersField = selectedTemplate.fields?.['minimumPlayers']
-                    const durationField = selectedTemplate.fields?.duration
+                    const durationField = selectedTemplate.fields?.['durationInMins'] ?? selectedTemplate.fields?.duration
                     const formatField = selectedTemplate.fields?.format
 
                     const startDateValue = startDateField?.defaultValue ?? startDateField?.['defaultValue']
                     const playerCapacityValue = playerCapacityField?.defaultValue ?? playerCapacityField?.['defaultValue']
-                    const minimumPlayersValue = minimumPlayersField?.defaultValue ?? minimumPlayersField?.['defaultValue']
                     const durationValue = durationField?.defaultValue ?? durationField?.['defaultValue']
                     const formatValue = formatField?.defaultValue ?? formatField?.['defaultValue']
 
@@ -367,6 +397,7 @@ export const useEventForm = (initialOrganizerId?: number) => {
         message,
         organizers,
         games,
+        gameTypes: games,
         gameTemplates,
         loadingOptions,
         validate,
@@ -375,22 +406,4 @@ export const useEventForm = (initialOrganizerId?: number) => {
         getFormatOptions,
         getSelectedTemplate,
     }
-}
-
-const getFormatOptionsFromGame = (game: Game | undefined, template: GameTemplate | undefined): string[] => {
-    const formatField = template?.fields?.format
-    const templateOptions = formatField?.options
-
-    if (templateOptions && templateOptions.length > 0) {
-        return templateOptions.map((item) => item.trim()).filter(Boolean)
-    }
-
-    if (!game?.format) {
-        return []
-    }
-
-    return game.format
-        .split('|')
-        .map((item) => item.trim())
-        .filter(Boolean)
 }

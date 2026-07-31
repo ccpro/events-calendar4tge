@@ -3,19 +3,28 @@
         "startAt": {
             "order": 1,
             "name": "Start Date",
-            "type": "datetime-utc"
+            "type": "datetime-local"
         },
         "playerCapacity": {
             "order": 2,
             "name": "Player Capacity",
             "type": "number",
+            "min": 2,
+            "max": 15,
             "defaultValue": 12
         },
-        "durationInMins": { "order": 3, "name": "Duration", "type": "number", "defaultValue": 45 },
+        "durationInMins": {
+            "order": 3,
+            "name": "Duration",
+            "type": "number",
+            "min": 15,
+            "max": 60,
+            "defaultValue": 45
+        },
         "format": {
             "order": 4,
             "name": "Format",
-            "type": "text",
+            "type": "select",
             "defaultValue": "Standard",
             "options": ["Standard", "Expanded"]
         }
