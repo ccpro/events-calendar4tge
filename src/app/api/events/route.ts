@@ -32,6 +32,8 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Start date cannot be in the past.' }, { status: 400 })
         }
 
+        const utcStartAt = selectedStartAt.toISOString()
+
         if (!Number.isInteger(playerCapacity) || playerCapacity < 1 || playerCapacity > 30) {
             return NextResponse.json({ error: 'Player capacity must be between 1 and 30.' }, { status: 400 })
         }
@@ -40,7 +42,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Duration must be at least 2 minutes.' }, { status: 400 })
         }
 
-        const insertValues = [organizer, gameType, startAt, playerCapacity, durationInMins, format]
+        const insertValues = [organizer, gameType, utcStartAt, playerCapacity, durationInMins, format]
 
         const result = db
             .prepare(`

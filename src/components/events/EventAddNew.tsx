@@ -21,12 +21,28 @@ const EventAddNew = () => {
         submitting,
         message,
         organizers,
-        gameTypes,
+        games,
+        gameTemplates,
         loadingOptions,
         updateField,
         handleSubmit,
         getFormatOptions,
+        getSelectedTemplate,
     } = useEventForm(activeOrganizer?.id)
+
+    const selectedTemplateFields = (getSelectedTemplate?.() ?? {}).fields ?? {}
+    const visibleFieldKeys = Object.entries(
+        selectedTemplateFields as Record<string, { order?: number }>,
+    )
+        .sort(([, left], [, right]) => (left.order ?? 0) - (right.order ?? 0))
+        .map(([key]) => key)
+
+    const getGameOptionLabel = (game: { name: string; template?: string | null }) => {
+        const matchingTemplate = gameTemplates.find((template) => template.id === game.template)
+        const templateName = matchingTemplate?.name?.trim()
+
+        return templateName ? `${game.name} (${templateName})` : `${game.name} (default-template)`
+    }
 
     return (
         <PageShell
@@ -63,16 +79,16 @@ const EventAddNew = () => {
                     </label>
 
                     <label style={{ display: 'grid', gap: '0.35rem' }}>
-                        <span style={{ fontWeight: 600 }}>Game type</span>
+                        <span style={{ fontWeight: 600 }}>Game</span>
                         <select
                             value={form.gameType}
                             onChange={(event) => updateField('gameType', event.target.value)}
                             style={inputStyle}
                         >
-                            <option value="">Select a game type</option>
-                            {gameTypes.map((gameType) => (
-                                <option key={gameType.id} value={gameType.id}>
-                                    {gameType.name}
+                            <option value="">Select a game</option>
+                            {games.map((game) => (
+                                <option key={game.id} value={game.id}>
+                                    {getGameOptionLabel(game)}
                                 </option>
                             ))}
                         </select>
@@ -83,72 +99,109 @@ const EventAddNew = () => {
                         ) : null}
                     </label>
 
-                    <label style={{ display: 'grid', gap: '0.35rem' }}>
-                        <span style={{ fontWeight: 600 }}>Start date</span>
-                        <input
-                            type="datetime-local"
-                            value={form.startAt}
-                            onChange={(event) => updateField('startAt', event.target.value)}
-                            style={inputStyle}
-                        />
-                        {errors.startAt ? (
-                            <span style={{ color: 'red', fontSize: '0.9rem' }}>
-                                {errors.startAt}
-                            </span>
-                        ) : null}
-                    </label>
+                    {visibleFieldKeys.map((fieldKey) => {
+                        const field = selectedTemplateFields[fieldKey]
+                        const label = field?.name || fieldKey
 
-                    <label style={{ display: 'grid', gap: '0.35rem' }}>
-                        <span
-                            style={{ fontWeight: 600 }}
-                        >{`Player capacity (minimal players ${form.minimumPlayers})`}</span>
-                        <input
-                            type="number"
-                            min={form.minimumPlayers}
-                            max={30}
-                            value={form.playerCapacity}
-                            onChange={(event) => updateField('playerCapacity', event.target.value)}
-                            style={inputStyle}
-                        />
-                        {errors.playerCapacity ? (
-                            <span style={{ color: 'red', fontSize: '0.9rem' }}>
-                                {errors.playerCapacity}
-                            </span>
-                        ) : null}
-                    </label>
+                        if (fieldKey === 'startAt') {
+                            return (
+                                <label key={fieldKey} style={{ display: 'grid', gap: '0.35rem' }}>
+                                    <span style={{ fontWeight: 600 }}>{label}</span>
+                                    <input
+                                        type="datetime-local"
+                                        value={form.startAt}
+                                        onChange={(event) =>
+                                            updateField('startAt', event.target.value)
+                                        }
+                                        style={inputStyle}
+                                    />
+                                    {errors.startAt ? (
+                                        <span style={{ color: 'red', fontSize: '0.9rem' }}>
+                                            {errors.startAt}
+                                        </span>
+                                    ) : null}
+                                </label>
+                            )
+                        }
 
-                    <label style={{ display: 'grid', gap: '0.35rem' }}>
-                        <span style={{ fontWeight: 600 }}>Duration (minutes)</span>
-                        <input
-                            type="number"
-                            min={1}
-                            value={form.durationInMins}
-                            onChange={(event) => updateField('durationInMins', event.target.value)}
-                            style={inputStyle}
-                        />
-                        {errors.durationInMins ? (
-                            <span style={{ color: 'red', fontSize: '0.9rem' }}>
-                                {errors.durationInMins}
-                            </span>
-                        ) : null}
-                    </label>
+                        if (fieldKey === 'playerCapacity') {
+                            return (
+                                <label key={fieldKey} style={{ display: 'grid', gap: '0.35rem' }}>
+                                    <span
+                                        style={{ fontWeight: 600 }}
+                                    >{`${label} (minimum 2 players)`}</span>
+                                    <input
+                                        type="number"
+                                        min={2}
+                                        max={30}
+                                        value={form.playerCapacity}
+                                        onChange={(event) =>
+                                            updateField('playerCapacity', event.target.value)
+                                        }
+                                        style={inputStyle}
+                                    />
+                                    {errors.playerCapacity ? (
+                                        <span style={{ color: 'red', fontSize: '0.9rem' }}>
+                                            {errors.playerCapacity}
+                                        </span>
+                                    ) : null}
+                                </label>
+                            )
+                        }
 
-                    <label style={{ display: 'grid', gap: '0.35rem' }}>
-                        <span style={{ fontWeight: 600 }}>Format</span>
-                        <select
-                            value={form.format}
-                            onChange={(event) => updateField('format', event.target.value)}
-                            style={inputStyle}
-                            disabled={!form.gameType || getFormatOptions().length === 0}
-                        >
-                            <option value="">Select a format</option>
-                            {getFormatOptions().map((formatOption) => (
-                                <option key={formatOption} value={formatOption}>
-                                    {formatOption}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
+                        if (fieldKey === 'durationInMins') {
+                            return (
+                                <label key={fieldKey} style={{ display: 'grid', gap: '0.35rem' }}>
+                                    <span style={{ fontWeight: 600 }}>{label}</span>
+                                    <input
+                                        type="number"
+                                        min={1}
+                                        value={form.durationInMins}
+                                        onChange={(event) =>
+                                            updateField('durationInMins', event.target.value)
+                                        }
+                                        style={inputStyle}
+                                    />
+                                    {errors.durationInMins ? (
+                                        <span style={{ color: 'red', fontSize: '0.9rem' }}>
+                                            {errors.durationInMins}
+                                        </span>
+                                    ) : null}
+                                </label>
+                            )
+                        }
+
+                        if (fieldKey === 'format') {
+                            const formatOptions = getFormatOptions()
+                            return (
+                                <label key={fieldKey} style={{ display: 'grid', gap: '0.35rem' }}>
+                                    <span style={{ fontWeight: 600 }}>{label}</span>
+                                    <select
+                                        value={form.format}
+                                        onChange={(event) =>
+                                            updateField('format', event.target.value)
+                                        }
+                                        style={inputStyle}
+                                        disabled={!form.gameType || formatOptions.length === 0}
+                                    >
+                                        <option value="">Select a format</option>
+                                        {formatOptions.map((formatOption) => (
+                                            <option key={formatOption} value={formatOption}>
+                                                {formatOption}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.format ? (
+                                        <span style={{ color: 'red', fontSize: '0.9rem' }}>
+                                            {errors.format}
+                                        </span>
+                                    ) : null}
+                                </label>
+                            )
+                        }
+
+                        return null
+                    })}
 
                     {message ? (
                         <p

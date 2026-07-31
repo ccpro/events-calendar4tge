@@ -1,0 +1,23 @@
+{
+    "fields": {
+        "startAt": {
+            "order": 1,
+            "name": "Start Date",
+            "type": "datetime-utc"
+        },
+        "playerCapacity": {
+            "order": 2,
+            "name": "Player Capacity",
+            "type": "number",
+            "defaultValue": 10
+        },
+        "durationInMins": { "order": 3, "name": "Duration", "type": "number", "defaultValue": 30 },
+        "format": {
+            "order": 4,
+            "name": "Format",
+            "type": "text",
+            "defaultValue": "Arena",
+            "options": ["Arena"]
+        }
+    }
+}

@@ -49,10 +49,10 @@ describe('useEventForm', () => {
         const { result } = renderHook(() => useEventForm())
 
         await waitFor(() => {
-            expect(result.current.gameTypes).toHaveLength(1)
+            expect(result.current.games).toHaveLength(1)
         })
 
-        expect(result.current.gameTypes[0]?.name).toBe('Magic')
+        expect(result.current.games[0]?.name).toBe('Magic')
     })
 
     it('uses the selected game minimum players as the default player capacity', async () => {
@@ -83,7 +83,7 @@ describe('useEventForm', () => {
         const { result } = renderHook(() => useEventForm())
 
         await waitFor(() => {
-            expect(result.current.gameTypes).toHaveLength(1)
+            expect(result.current.games).toHaveLength(1)
         })
 
         result.current.updateField('gameType', '7')
@@ -119,7 +119,7 @@ describe('useEventForm', () => {
         const { result } = renderHook(() => useEventForm())
 
         await waitFor(() => {
-            expect(result.current.gameTypes).toHaveLength(1)
+            expect(result.current.games).toHaveLength(1)
         })
 
         act(() => {
@@ -159,7 +159,7 @@ describe('useEventForm', () => {
         const { result } = renderHook(() => useEventForm())
 
         await waitFor(() => {
-            expect(result.current.gameTypes).toHaveLength(1)
+            expect(result.current.games).toHaveLength(1)
         })
 
         act(() => {
@@ -171,5 +171,43 @@ describe('useEventForm', () => {
         })
 
         expect(result.current.getFormatOptions()).toEqual(['Standard', 'Commander', 'Modern'])
+    })
+
+    it('updates the minimum players and capacity from the selected game', async () => {
+        const fetchMock = vi.mocked(fetch)
+        fetchMock
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ organizers: [] }),
+            } as Response)
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({
+                    games: [
+                        {
+                            id: 7,
+                            name: 'Magic',
+                            description: null,
+                            template: 'mtg-template',
+                            createdAt: '2024-01-01T00:00:00.000Z',
+                            durationInMins: 60,
+                            minimumPlayers: 4,
+                            format: 'Standard',
+                        },
+                    ],
+                }),
+            } as Response)
+
+        const { result } = renderHook(() => useEventForm())
+
+        await waitFor(() => {
+            expect(result.current.games).toHaveLength(1)
+        })
+
+        act(() => {
+            result.current.updateField('gameType', '7')
+        })
+
+        expect(result.current.form.playerCapacity).toBe('4')
     })
 })

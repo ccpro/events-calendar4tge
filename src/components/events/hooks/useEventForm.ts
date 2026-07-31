@@ -2,15 +2,56 @@ import { FormEvent, useCallback, useEffect, useState } from 'react'
 import { Organizer } from '@/common/types'
 import { Game } from '@/common/types'
 
+type GameTemplateField = {
+    order?: number
+    name?: string
+    type?: string
+    defaultValue?: unknown
+    options?: string[]
+}
+
+type GameTemplate = {
+    id: string
+    name?: string
+    description?: string
+    fields?: Record<string, GameTemplateField>
+}
+
 export type EventFormState = {
     organizer: string
     gameType: string
     startAt: string
     playerCapacity: string
     durationInMins: string
-    minimumPlayers: string
     format: string
 }
+
+type FieldKey = 'startAt' | 'playerCapacity' | 'durationInMins' | 'minimumPlayers' | 'format'
+
+const DEFAULT_GAME_TEMPLATE: GameTemplate = {
+    id: 'default',
+    name: 'Default',
+    fields: {
+        "startAt": {
+            order: 1,
+            name: 'Start Date',
+            type: 'datetime-utc',
+        },
+        "playerCapacity": {
+            order: 2,
+            name: 'Player Capacity',
+            type: 'number',
+            defaultValue: 4,
+        },
+        "durationInMins": {
+            order: 3,
+            name: 'Duration',
+            type: 'number',
+            defaultValue: 60,
+        },
+    },
+}
+
 
 export type EventFormErrors = Partial<Record<keyof EventFormState, string>>
 
@@ -19,7 +60,6 @@ export const initialFormState: EventFormState = {
     gameType: '',
     startAt: '',
     playerCapacity: '4',
-    minimumPlayers: '2',
     durationInMins: '60',
     format: '',
 }
@@ -35,7 +75,8 @@ export const useEventForm = (initialOrganizerId?: number) => {
     const [message, setMessage] = useState<string | null>(null)
 
     const [organizers, setOrganizers] = useState<Organizer[]>([])
-    const [gameTypes, setGameTypes] = useState<Game[]>([])
+    const [games, setGames] = useState<Game[]>([])
+    const [gameTemplates, setGameTemplates] = useState<GameTemplate[]>([])
     const [loadingOptions, setLoadingOptions] = useState(false)
 
     useEffect(() => {
@@ -43,19 +84,25 @@ export const useEventForm = (initialOrganizerId?: number) => {
             setLoadingOptions(true)
 
             try {
-                const [organizerRes, gameTypeRes] = await Promise.all([
-                    fetch('/api/organizer'),
-                    fetch('/api/games'),
+                const [organizerRes, gameTypeRes, gameTemplatesRes] = await Promise.all([
+                    Promise.resolve(fetch('/api/organizer')).catch(() => undefined),
+                    Promise.resolve(fetch('/api/games')).catch(() => undefined),
+                    Promise.resolve(fetch('/api/games-templates')).catch(() => undefined),
                 ])
 
-                const organizerData = await organizerRes.json().catch(() => ({}))
-                const gameTypeData = await gameTypeRes.json().catch(() => ({}))
+                const organizerData = organizerRes ? await organizerRes.json().catch(() => ({})) : {}
+                const gamesData = gameTypeRes ? await gameTypeRes.json().catch(() => ({})) : {}
+                const gameTemplatesData = gameTemplatesRes ? await gameTemplatesRes.json().catch(() => ({})) : {}
+
+
 
                 setOrganizers(organizerData.organizers ?? [])
-                setGameTypes(gameTypeData.gameTypes ?? gameTypeData.games ?? [])
+                setGames(gamesData.games ?? gamesData.gameTypes ?? [])
+                setGameTemplates(gameTemplatesData.templates ?? [])
             } catch {
                 setOrganizers([])
-                setGameTypes([])
+                setGames([])
+                setGameTemplates([])
             } finally {
                 setLoadingOptions(false)
             }
@@ -71,8 +118,18 @@ export const useEventForm = (initialOrganizerId?: number) => {
         }
     }, [initialOrganizerId])
 
+    const getSelectedTemplate = useCallback((): GameTemplate => {
+        if (!form.gameType) {
+            return DEFAULT_GAME_TEMPLATE
+        }
+
+        const selectedGame = games.find((gameType) => String(gameType.id) === form.gameType)
+        return gameTemplates.find((template) => template.id === selectedGame?.template) ?? DEFAULT_GAME_TEMPLATE
+    }, [form.gameType, gameTemplates, games])
+
     const validate = useCallback(() => {
         const nextErrors: EventFormErrors = {}
+        const selectedTemplate = getSelectedTemplate()
         const playerCapacity = Number(form.playerCapacity)
         const durationInMins = Number(form.durationInMins)
 
@@ -84,38 +141,54 @@ export const useEventForm = (initialOrganizerId?: number) => {
             nextErrors.gameType = 'Game type is required.'
         }
 
-        if (!form.startAt) {
-            nextErrors.startAt = 'Start date is required.'
-        } else {
-            const selectedStartAt = new Date(form.startAt)
-            const now = new Date()
+        const templateFields = (selectedTemplate.fields ?? {}) as Record<string, GameTemplateField>
 
-            if (Number.isNaN(selectedStartAt.getTime())) {
-                nextErrors.startAt = 'Start date is invalid.'
-            } else if (selectedStartAt.getTime() < now.getTime()) {
-                nextErrors.startAt = 'Start date cannot be in the past.'
+        if (templateFields['startAt']) {
+            if (!form.startAt) {
+                nextErrors.startAt = 'Start date is required.'
+            } else {
+                const selectedStartAt = new Date(form.startAt)
+                const now = new Date()
+
+                if (Number.isNaN(selectedStartAt.getTime())) {
+                    nextErrors.startAt = 'Start date is invalid.'
+                } else if (selectedStartAt.getTime() < now.getTime()) {
+                    nextErrors.startAt = 'Start date cannot be in the past.'
+                }
             }
         }
 
-        if (!Number.isInteger(playerCapacity) || playerCapacity < 1 || playerCapacity > 30) {
-            nextErrors.playerCapacity = 'Player capacity must be between 1 and 30.'
+        if (templateFields['playerCapacity']) {
+            if (!Number.isInteger(playerCapacity) || playerCapacity < 1 || playerCapacity > 30) {
+                nextErrors.playerCapacity = 'Player capacity must be between 1 and 30.'
+            }
         }
 
-        if (!Number.isInteger(durationInMins) || durationInMins < 1) {
-            nextErrors.durationInMins = 'Duration must be at least 1 minute.'
+        if (templateFields.duration) {
+            if (!Number.isInteger(durationInMins) || durationInMins < 1) {
+                nextErrors.durationInMins = 'Duration must be at least 1 minute.'
+            }
+        }
+
+        if (templateFields.format) {
+            if (!form.format) {
+                nextErrors.format = 'Format is required.'
+            }
         }
 
         return nextErrors
-    }, [form.organizer, form.gameType, form.startAt, form.playerCapacity, form.durationInMins])
+    }, [form.organizer, form.gameType, form.startAt, form.playerCapacity, form.durationInMins, form.format, getSelectedTemplate])
 
     const updateField = useCallback((field: keyof EventFormState, value: string) => {
         setForm((current) => {
             const nextState = { ...current, [field]: value }
 
             if (field === 'gameType') {
-                const selectedGame = gameTypes.find((gameType) => String(gameType.id) === value)
+                const selectedGame = games.find((gameType) => String(gameType.id) === value)
+                const selectedTemplate = gameTemplates.find((template) => template.id === selectedGame?.template) ?? DEFAULT_GAME_TEMPLATE
 
                 if (selectedGame) {
+
                     if (selectedGame.minimumPlayers !== undefined && (!current.playerCapacity || current.playerCapacity === String(initialFormState.playerCapacity))) {
                         nextState.playerCapacity = String(selectedGame.minimumPlayers)
                     }
@@ -125,8 +198,38 @@ export const useEventForm = (initialOrganizerId?: number) => {
                     }
 
                     if (selectedGame.format) {
-                        const [firstFormat] = getFormatOptionsFromGame(selectedGame)
+                        const [firstFormat] = getFormatOptionsFromGame(selectedGame, selectedTemplate)
                         nextState.format = firstFormat ?? ''
+                    }
+
+                    if (selectedTemplate?.fields) {
+                        const startDateField = selectedTemplate.fields?.['startAt']
+                        const playerCapacityField = selectedTemplate.fields?.['playerCapacity']
+                        const minimumPlayersField = selectedTemplate.fields?.['minimumPlayers']
+                        const durationField = selectedTemplate.fields?.duration
+                        const formatField = selectedTemplate.fields?.format
+
+                        const startDateValue = startDateField?.defaultValue ?? startDateField?.['defaultValue']
+                        const playerCapacityValue = playerCapacityField?.defaultValue ?? playerCapacityField?.['defaultValue']
+                        const minimumPlayersValue = minimumPlayersField?.defaultValue ?? minimumPlayersField?.['defaultValue']
+                        const durationValue = durationField?.defaultValue ?? durationField?.['defaultValue']
+                        const formatValue = formatField?.defaultValue ?? formatField?.['defaultValue']
+
+                        if (startDateValue !== undefined && startDateValue !== null) {
+                            nextState.startAt = String(startDateValue)
+                        }
+
+                        if (playerCapacityValue !== undefined && playerCapacityValue !== null && (!nextState.playerCapacity || nextState.playerCapacity === String(initialFormState.playerCapacity))) {
+                            nextState.playerCapacity = String(playerCapacityValue)
+                        }
+
+                        if (durationValue !== undefined && durationValue !== null && (!nextState.durationInMins || nextState.durationInMins === String(initialFormState.durationInMins))) {
+                            nextState.durationInMins = String(durationValue)
+                        }
+
+                        if (formatValue !== undefined && formatValue !== null && (!nextState.format || nextState.format === initialFormState.format)) {
+                            nextState.format = String(formatValue)
+                        }
                     }
                 }
             }
@@ -134,14 +237,15 @@ export const useEventForm = (initialOrganizerId?: number) => {
             return nextState
         })
         setErrors((current) => ({ ...current, [field]: undefined }))
-    }, [gameTypes])
+    }, [gameTemplates, games])
 
     useEffect(() => {
         if (!form.gameType) {
             return
         }
 
-        const selectedGame = gameTypes.find((gameType) => String(gameType.id) === form.gameType)
+        const selectedGame = games.find((gameType) => String(gameType.id) === form.gameType)
+        const selectedTemplate = gameTemplates.find((template) => template.id === selectedGame?.template) ?? DEFAULT_GAME_TEMPLATE
 
         if (selectedGame) {
             setForm((current) => {
@@ -151,19 +255,49 @@ export const useEventForm = (initialOrganizerId?: number) => {
                     nextState.playerCapacity = String(selectedGame.minimumPlayers)
                 }
 
-                if (selectedGame.durationInMins !== undefined && current.durationInMins === initialFormState.durationInMins) {
+                if (selectedGame.durationInMins !== undefined && (!current.durationInMins || current.durationInMins === initialFormState.durationInMins)) {
                     nextState.durationInMins = String(selectedGame.durationInMins)
                 }
 
                 if (selectedGame.format && (!current.format || current.format === initialFormState.format)) {
-                    const [firstFormat] = getFormatOptionsFromGame(selectedGame)
+                    const [firstFormat] = getFormatOptionsFromGame(selectedGame, selectedTemplate)
                     nextState.format = firstFormat ?? ''
+                }
+
+                if (selectedTemplate?.fields) {
+                    const startDateField = selectedTemplate.fields?.['startAt']
+                    const playerCapacityField = selectedTemplate.fields?.['playerCapacity']
+                    const minimumPlayersField = selectedTemplate.fields?.['minimumPlayers']
+                    const durationField = selectedTemplate.fields?.duration
+                    const formatField = selectedTemplate.fields?.format
+
+                    const startDateValue = startDateField?.defaultValue ?? startDateField?.['defaultValue']
+                    const playerCapacityValue = playerCapacityField?.defaultValue ?? playerCapacityField?.['defaultValue']
+                    const minimumPlayersValue = minimumPlayersField?.defaultValue ?? minimumPlayersField?.['defaultValue']
+                    const durationValue = durationField?.defaultValue ?? durationField?.['defaultValue']
+                    const formatValue = formatField?.defaultValue ?? formatField?.['defaultValue']
+
+                    if (startDateValue !== undefined && startDateValue !== null && (!current.startAt || current.startAt === initialFormState.startAt)) {
+                        nextState.startAt = String(startDateValue)
+                    }
+
+                    if (playerCapacityValue !== undefined && playerCapacityValue !== null && (!nextState.playerCapacity || nextState.playerCapacity === String(initialFormState.playerCapacity))) {
+                        nextState.playerCapacity = String(playerCapacityValue)
+                    }
+
+                    if (durationValue !== undefined && durationValue !== null && (!nextState.durationInMins || nextState.durationInMins === String(initialFormState.durationInMins))) {
+                        nextState.durationInMins = String(durationValue)
+                    }
+
+                    if (formatValue !== undefined && formatValue !== null && (!nextState.format || nextState.format === initialFormState.format)) {
+                        nextState.format = String(formatValue)
+                    }
                 }
 
                 return nextState
             })
         }
-    }, [form.gameType, gameTypes])
+    }, [form.gameType, gameTemplates, games])
 
     const handleSubmit = useCallback(
         async (event: FormEvent<HTMLFormElement>) => {
@@ -220,10 +354,11 @@ export const useEventForm = (initialOrganizerId?: number) => {
             return []
         }
 
-        const selectedGame = gameTypes.find((gameType) => String(gameType.id) === form.gameType)
+        const selectedGame = games.find((gameType) => String(gameType.id) === form.gameType)
+        const selectedTemplate = gameTemplates.find((template) => template.id === selectedGame?.template) ?? DEFAULT_GAME_TEMPLATE
 
-        return selectedGame ? getFormatOptionsFromGame(selectedGame) : []
-    }, [form.gameType, gameTypes])
+        return getFormatOptionsFromGame(selectedGame, selectedTemplate)
+    }, [form.gameType, games, gameTemplates])
 
     return {
         form,
@@ -231,17 +366,26 @@ export const useEventForm = (initialOrganizerId?: number) => {
         submitting,
         message,
         organizers,
-        gameTypes,
+        games,
+        gameTemplates,
         loadingOptions,
         validate,
         updateField,
         handleSubmit,
         getFormatOptions,
+        getSelectedTemplate,
     }
 }
 
-const getFormatOptionsFromGame = (game: Game): string[] => {
-    if (!game.format) {
+const getFormatOptionsFromGame = (game: Game | undefined, template: GameTemplate | undefined): string[] => {
+    const formatField = template?.fields?.format
+    const templateOptions = formatField?.options
+
+    if (templateOptions && templateOptions.length > 0) {
+        return templateOptions.map((item) => item.trim()).filter(Boolean)
+    }
+
+    if (!game?.format) {
         return []
     }
 
