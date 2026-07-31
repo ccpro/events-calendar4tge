@@ -1,7 +1,5 @@
 'use client'
 
-import type { Event } from '@/common/types'
-
 type SubmitButtonProps = {
     disabled: boolean
     onClick: () => void
@@ -27,6 +25,7 @@ const SubmitButton = ({
                 background: disabled ? 'black' : 'transparent',
                 color: disabled ? 'white' : 'black',
                 cursor: disabled ? 'not-allowed' : 'pointer',
+                width: 'fit-content',
             }}
         >
             {disabled ? cta_text_disabled : cta_text_enabled}

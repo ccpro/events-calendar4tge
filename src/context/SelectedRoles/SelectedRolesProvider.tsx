@@ -9,28 +9,24 @@ const STORAGE_KEY_PLAYER = 'active-player'
 
 export const SelectedRolesProvider = ({ children }: { children: React.ReactNode }) => {
     // start null on both server and client to avoid a hydration mismatch, then hydrate from localStorage after mount
-    const [activeOrganizer, setActiveOrganizerState] = useState<Organizer | null>(null)
-    const [activePlayer, setActivePlayerState] = useState<Player | null>(null)
-
-    useEffect(() => {
-        try {
+    const [activeOrganizer, setActiveOrganizerState] = useState<Organizer | null>(() => {
+        if (typeof window !== 'undefined') {
             const storedOrganizer = window.localStorage.getItem(STORAGE_KEY_ORGANIZER)
             if (storedOrganizer) {
-                setActiveOrganizerState(JSON.parse(storedOrganizer))
+                return JSON.parse(storedOrganizer)
             }
-        } catch {
-            // ignore malformed storage
         }
-
-        try {
+        return null
+    })
+    const [activePlayer, setActivePlayerState] = useState<Player | null>(() => {
+        if (typeof window !== 'undefined') {
             const storedPlayer = window.localStorage.getItem(STORAGE_KEY_PLAYER)
             if (storedPlayer) {
-                setActivePlayerState(JSON.parse(storedPlayer))
+                return JSON.parse(storedPlayer)
             }
-        } catch {
-            // ignore malformed storage
         }
-    }, [])
+        return null
+    })
 
     const setActiveOrganizer = (organizer: Organizer | null) => {
         setActiveOrganizerState(organizer)

@@ -15,8 +15,7 @@ type CalendarSelectedEventsListProps = {
 }
 
 const CalendarSelectedEventsList = ({ events, onRefresh }: CalendarSelectedEventsListProps) => {
-    const { eventStatus, signupForEvent, getRegistrationForm } =
-        useCalendarSelectedEventsList(onRefresh)
+    const { eventStatus, signupForEvent, getRegistrationForm } = useCalendarSelectedEventsList()
     const { activePlayer } = useSelectedRolesContext()
     const [pendingEvent, setPendingEvent] = useState<Event | null>(null)
     const [ip, setIp] = useState('')

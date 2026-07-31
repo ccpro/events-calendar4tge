@@ -1,17 +1,12 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import EventList from './EventList'
 import { SelectedRolesContext } from '../../context/SelectedRoles/SelectedRolesContext'
-import CalendarView from '../calendar/CalendarView'
 
 const mockContextValue = {
     activeOrganizer: null,
     setActiveOrganizer: vi.fn(),
     activePlayer: null,
     setActivePlayer: vi.fn(),
-}
-
-const getFutureEventDate = (baseDate: Date) => {
-    return new Date(baseDate.getTime() + 2 * 60 * 60 * 1000)
 }
 
 describe('EventList', () => {

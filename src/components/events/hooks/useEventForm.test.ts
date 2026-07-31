@@ -72,6 +72,25 @@ describe('useEventForm', () => {
         })
     })
 
+    it('rejects a start date in the past', async () => {
+        mockOptionsFetch()
+
+        const { result } = renderHook(() => useEventForm())
+        await waitFor(() => expect(result.current.loadingOptions).toBe(false))
+
+        const pastStartAt = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 16)
+
+        act(() => {
+            result.current.updateField('organizer', '1')
+            result.current.updateField('gameType', '2')
+            result.current.updateField('startAt', pastStartAt)
+        })
+
+        expect(result.current.validate()).toEqual({
+            startAt: 'Start date cannot be in the past.',
+        })
+    })
+
     it('submits successfully and resets the form', async () => {
         mockOptionsFetch({ ok: true, json: async () => ({ event: { id: 9 } }) } as Response)
 

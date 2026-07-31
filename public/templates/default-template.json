@@ -1,0 +1,28 @@
+{
+    "fields": {
+        "startAt": {
+            "order": 1,
+            "name": "Start Date",
+            "required": true,
+            "type": "datetime-local"
+        },
+        "playerCapacity": {
+            "order": 2,
+            "name": "Player Capacity",
+            "type": "number",
+            "min": 2,
+            "max": 12,
+            "required": true,
+            "defaultValue": 4
+        },
+        "durationInMins": {
+            "order": 3,
+            "name": "Duration",
+            "type": "number",
+            "min": 15,
+            "max": 120,
+            "required": true,
+            "defaultValue": 60
+        }
+    }
+}
