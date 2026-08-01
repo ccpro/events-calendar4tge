@@ -19,7 +19,7 @@ This project lets you:
 - SQLite via better-sqlite3
 - Vanilla CSS Modules
 - ICS export support
-- QR code generation for player registration
+- QR code generation for player registration and game subscriptions
 - Vitest and Testing Library for tests
 
 ## Getting started
