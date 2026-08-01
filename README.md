@@ -28,9 +28,13 @@ A web application built for tabletop card game store organizers to schedule in-s
 # Usage
 
 `git clone https://github.com/ccpro/events-calendar4tge.git`
+
 `cd events-calendar4tge`
+
 `npm i`
+
 `npm run dev`
+
 open localhost:3000
 
 select organizator and player. to play with project create up to 4 players
