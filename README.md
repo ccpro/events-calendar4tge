@@ -44,7 +44,7 @@ finally i added dev.db to project. kill the db to start from the scratch
 
 # AI Usage Summary: Moderate-to-Aggressive Integration & PR Review Focus (Claude, CoPilot, Gemini)
 
-in this project, i leveraged AI at a moderate-to-aggressive level across the development lifecycle, using it as an active co-developer for code generation, architectural validation, schema design, and most prominently, automated Pull Request (PR) code reviews
+i leveraged AI at a moderate-to-aggressive level across the development lifecycle, using it as an active co-developer to break down features into components, monitor the implementation, design schemas, and automate Pull Request (PR) code reviews
 
 # Dev Notes
 
