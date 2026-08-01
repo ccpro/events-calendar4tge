@@ -69,6 +69,14 @@ npm run lint
 npm test
 ```
 
+## AI usage (Claude, Gemini/AntiGravity, CoPilot)
+
+AI was used throughout the project as:
+
+- a planner to help break down features, structure the app, and outline implementation steps
+- a developer to scaffold components, API routes, and supporting logic
+- a code reviewer to help spot issues, improve quality, and suggest refinements
+
 ## Notes
 
 - Authentication is not implemented; the app relies on role selection for local demo usage.
